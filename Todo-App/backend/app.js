@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+const todoModel = require('./models/Todo');
+
 app.get('/', (req,res) => {
     res.send("Welcome to Todo Application!");
 })
