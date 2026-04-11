@@ -1,6 +1,25 @@
 import React, { useState } from 'react'
 
 const App = () => {
+
+  const [task, setTask] = useState("");
+  const [todos, setTodos] = useState([])
+
+  function createTask(e) {
+    e.preventDefault();
+
+    if(task.trim() === "") return;
+
+    const newTodo = {
+      id: Date.now(),
+      title: task,
+      completed: false
+    }
+
+    setTodos([...todos, newTodo]);
+    setTask("");
+  }
+
   return (
     <div className='h-screen w-screen bg-linear-to-br from-zinc-950 to-zinc-900 text-white flex justify-center items-center p-6 overflow-hidden'>
 
@@ -24,12 +43,15 @@ const App = () => {
             className='h-14 bg-zinc-800 rounded-xl px-4 w-full outline-none border border-zinc-700 focus:border-blue-500 transition'
             type="text"
             placeholder='Enter your task here...'
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
           />
 
           <input
             className='bg-blue-600 hover:bg-blue-700 transition text-lg cursor-pointer h-14 px-6 rounded-xl font-medium'
             type="submit"
             value="Add"
+            onClick={(e) => createTask(e)}
           />
 
         </form>
@@ -40,40 +62,40 @@ const App = () => {
         {/* Tasks Section */}
         <div className='flex flex-col flex-1 overflow-y-auto pr-2'>
 
-          {/* Task Item */}
-          <div className='flex justify-between items-center min-h-14 w-full bg-zinc-800 hover:bg-zinc-700 transition rounded-xl p-3 mb-4 border border-zinc-700'>
-
-            {/* Left Side */}
-            <div className='flex gap-4 items-center'>
-
-              <input
-                type="checkbox"
-                className='h-5 w-5 accent-blue-600 cursor-pointer'
-              />
-
-              <p className='text-zinc-200 wrap-break-words'>
-                Learn React Hooks and build small UI components
-
-                <button className='ml-3 bg-green-600 hover:bg-green-700 transition rounded-lg py-1 px-3 text-sm'>
-                  ✏️ Edit
-                </button>
-
-              </p>
-
-            </div>
-
-            {/* Delete Button */}
-            <button className='bg-red-600 hover:bg-red-700 transition px-4 py-2 cursor-pointer rounded-lg text-sm font-medium'>
-              Delete
-            </button>
-
-          </div>
-
-          {/* Empty Space Helper */}
-          <div className='text-center text-zinc-500 mt-6 text-sm'>
-            Your tasks will appear here ✨
-          </div>
-
+          {(todos.length == 0) ? 
+            // Empty Space Helper
+            (<div className='text-center text-zinc-500 mt-6 text-sm'>
+              Your tasks will appear here ✨
+            </div>) : 
+            
+              todos.map(todo => (
+                // Task Item
+                  <div key={todo.id} className='flex justify-between items-center min-h-14 w-full bg-zinc-800 hover:bg-zinc-700 transition rounded-xl p-3 mb-4 border border-zinc-700'>
+                    {/* Left Side */}
+                    <div className='flex gap-4 items-center'>
+                      <input
+                        type="checkbox"
+                        onChange={() => {
+                          todo.completed = !todo.completed
+                        }}
+                        className='h-5 w-5 accent-blue-600 cursor-pointer'
+                      />
+                      <p className={todo.completed ? "text-zinc-200 wrap-break-words line-through" : "text-zinc-200 wrap-break-words"}>
+                        {todo.title}
+                        <button className='ml-3 bg-green-600 hover:bg-green-700 transition rounded-lg py-1 px-3 text-sm'>
+                          ✏️ Edit
+                        </button>
+                      </p>
+                    </div>
+                    {/* Delete Button */}
+                    <button 
+                      className='bg-red-600 hover:bg-red-700 transition px-4 py-2 cursor-pointer rounded-lg text-sm font-medium'
+                    >
+                      Delete
+                    </button>
+                  </div>
+            ))
+          }
         </div>
 
       </div>
