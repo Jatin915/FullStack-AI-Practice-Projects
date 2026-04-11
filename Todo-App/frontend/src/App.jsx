@@ -4,11 +4,25 @@ const App = () => {
 
   const [task, setTask] = useState("");
   const [todos, setTodos] = useState([])
+  const [buttonToggle, setbuttonToggle] = useState("Add");
+  const [editId, setEditId] = useState(null);
 
-  function createTask(e) {
+  // create task
+  function createTask(e, editId) {
     e.preventDefault();
-
     if(task.trim() === "") return;
+
+    if(buttonToggle == "Edit" && editId !== null) {
+
+      todos.map(todo => {
+        if(todo.id === editId) todo.title = task;
+      })
+
+      setTask("");
+      setbuttonToggle("Add");
+      setEditId(null)
+      return;
+    }
 
     const newTodo = {
       id: Date.now(),
@@ -18,6 +32,31 @@ const App = () => {
 
     setTodos([...todos, newTodo]);
     setTask("");
+  }
+
+
+  // toggle todo
+  function toggleTodo(id) {
+    setTodos(prevTodos => 
+      prevTodos.map(todo => 
+        (todo.id === id) ? {...todo, completed: !todo.completed} : todo
+      )
+    );
+  }
+
+
+  // edit task
+  function editTask(id, title) {
+    setbuttonToggle("Edit");
+    setTask(title);
+    setEditId(id);
+  }
+  
+
+  // delete task
+  function deleteTask(id) {
+    let newTodos = todos.filter(todo => todo.id !== id);
+    setTodos(newTodos);
   }
 
   return (
@@ -50,8 +89,8 @@ const App = () => {
           <input
             className='bg-blue-600 hover:bg-blue-700 transition text-lg cursor-pointer h-14 px-6 rounded-xl font-medium'
             type="submit"
-            value="Add"
-            onClick={(e) => createTask(e)}
+            value={buttonToggle}
+            onClick={(e) => createTask(e, editId)}
           />
 
         </form>
@@ -62,7 +101,7 @@ const App = () => {
         {/* Tasks Section */}
         <div className='flex flex-col flex-1 overflow-y-auto pr-2'>
 
-          {(todos.length == 0) ? 
+          {(todos.length == 0) ?
             // Empty Space Helper
             (<div className='text-center text-zinc-500 mt-6 text-sm'>
               Your tasks will appear here ✨
@@ -75,14 +114,15 @@ const App = () => {
                     <div className='flex gap-4 items-center'>
                       <input
                         type="checkbox"
-                        onChange={() => {
-                          todo.completed = !todo.completed
-                        }}
+                        checked={todo.completed}
+                        onChange={() => {toggleTodo(todo.id)}}
                         className='h-5 w-5 accent-blue-600 cursor-pointer'
                       />
                       <p className={todo.completed ? "text-zinc-200 wrap-break-words line-through" : "text-zinc-200 wrap-break-words"}>
                         {todo.title}
-                        <button className='ml-3 bg-green-600 hover:bg-green-700 transition rounded-lg py-1 px-3 text-sm'>
+                        <button className='ml-3 bg-green-600 hover:bg-green-700 transition rounded-lg py-1 px-3 text-sm'
+                            onClick={() => {editTask(todo.id, todo.title)}}
+                        >
                           ✏️ Edit
                         </button>
                       </p>
@@ -90,6 +130,7 @@ const App = () => {
                     {/* Delete Button */}
                     <button 
                       className='bg-red-600 hover:bg-red-700 transition px-4 py-2 cursor-pointer rounded-lg text-sm font-medium'
+                      onClick={() => {deleteTask(todo.id)}}
                     >
                       Delete
                     </button>
@@ -97,9 +138,7 @@ const App = () => {
             ))
           }
         </div>
-
       </div>
-
     </div>
   )
 }
