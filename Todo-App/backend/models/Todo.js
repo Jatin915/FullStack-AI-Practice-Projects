@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-mongoose.connect(`mongodb://127.0.0.1:27017/todoFullstack`);
-
 const todoSchema = mongoose.Schema({
     title: {
         type: String,
@@ -19,4 +17,5 @@ const todoSchema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("Todo", todoSchema);
+const Task = mongoose.model("Todo", todoSchema);
+module.exports = Task;
