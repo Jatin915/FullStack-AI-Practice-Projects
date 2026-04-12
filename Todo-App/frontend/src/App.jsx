@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 const App = () => {
 
   const [task, setTask] = useState("");
@@ -7,56 +7,84 @@ const App = () => {
   const [buttonToggle, setbuttonToggle] = useState("Add");
   const [editId, setEditId] = useState(null);
 
+  //display tasks
+  const fetchTasks = async() => {
+    try {
+      const response = await axios.get("/api/tasks");
+      setTodos(response.data);
+    } catch(err) {
+      console.log(err);
+      alert("Error displaying tasks! check console window for more details")
+    }
+  }
+
+  // render tasks when components load
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
   // create task
-  function createTask(e, editId) {
-    e.preventDefault();
-    if(task.trim() === "") return;
+  async function createTask(e, editId) {
+    try {
+      e.preventDefault();
+      if(task.trim() === "") return;
 
-    if(buttonToggle == "Edit" && editId !== null) {
+      if(buttonToggle === "Edit" && editId) {
+        await axios.put(`/api/tasks/${editId}`, {
+          title: task
+        })
+        setTask("");
+        setbuttonToggle("Add");
+        setEditId(null)
+        fetchTasks();
+        return;
+      }
 
-      todos.map(todo => {
-        if(todo.id === editId) todo.title = task;
-      })
+      await axios.post("/api/tasks", {
+        title: task
+      });
 
+      fetchTasks();
       setTask("");
-      setbuttonToggle("Add");
-      setEditId(null)
-      return;
+    } catch(err) {
+      console.log(err);
+      alert("Error creating new task! check console window for more details")
     }
-
-    const newTodo = {
-      id: Date.now(),
-      title: task,
-      completed: false
-    }
-
-    setTodos([...todos, newTodo]);
-    setTask("");
   }
 
-
-  // toggle todo
-  function toggleTodo(id) {
-    setTodos(prevTodos => 
-      prevTodos.map(todo => 
-        (todo.id === id) ? {...todo, completed: !todo.completed} : todo
-      )
-    );
+  //toggle task
+  async function toggleTask(id) {
+    try {
+      await axios.patch(`/api/tasks/${id}`);
+      fetchTasks();
+    } catch(err) {
+      console.log(err);
+      alert("Error toggling task status! check console window for more details")
+    }
   }
-
 
   // edit task
   function editTask(id, title) {
-    setbuttonToggle("Edit");
-    setTask(title);
-    setEditId(id);
+    try {
+      setbuttonToggle("Edit");
+      setTask(title);
+      setEditId(id);
+    } catch(err) {
+      console.log(err);
+      alert("Error editing task! check console window for more details")
+    }
   }
   
 
   // delete task
-  function deleteTask(id) {
-    let newTodos = todos.filter(todo => todo.id !== id);
-    setTodos(newTodos);
+  async function deleteTask(id) {
+    try {
+      await axios.delete(`/api/tasks/${id}`);
+      fetchTasks();
+    } catch(err) {
+      console.log(err);
+      alert("Error deleting task! check console window for more details")
+    }
   }
 
   return (
@@ -76,7 +104,9 @@ const App = () => {
         </div>
 
         {/* Form */}
-        <form className='flex justify-between gap-3 mb-6'>
+        <form className='flex justify-between gap-3 mb-6' 
+              onSubmit={(e) => createTask(e, editId)}
+        >
 
           <input
             className='h-14 bg-zinc-800 rounded-xl px-4 w-full outline-none border border-zinc-700 focus:border-blue-500 transition'
@@ -90,7 +120,6 @@ const App = () => {
             className='bg-blue-600 hover:bg-blue-700 transition text-lg cursor-pointer h-14 px-6 rounded-xl font-medium'
             type="submit"
             value={buttonToggle}
-            onClick={(e) => createTask(e, editId)}
           />
 
         </form>
@@ -109,28 +138,28 @@ const App = () => {
             
               todos.map(todo => (
                 // Task Item
-                  <div key={todo.id} className='flex justify-between items-center min-h-14 w-full bg-zinc-800 hover:bg-zinc-700 transition rounded-xl p-3 mb-4 border border-zinc-700'>
+                  <div key={todo._id} className='flex justify-between items-center min-h-14 w-full bg-zinc-800 hover:bg-zinc-700 transition rounded-xl p-3 mb-4 border border-zinc-700'>
                     {/* Left Side */}
                     <div className='flex gap-4 items-center'>
                       <input
                         type="checkbox"
                         checked={todo.completed}
-                        onChange={() => {toggleTodo(todo.id)}}
+                        onChange={() => {toggleTask(todo._id)}}
                         className='h-5 w-5 accent-blue-600 cursor-pointer'
                       />
                       <p className={todo.completed ? "text-zinc-200 wrap-break-words line-through" : "text-zinc-200 wrap-break-words"}>
                         {todo.title}
-                        <button className='ml-3 bg-green-600 hover:bg-green-700 transition rounded-lg py-1 px-3 text-sm'
-                            onClick={() => {editTask(todo.id, todo.title)}}
+                        <button type='button' className='ml-3 bg-green-600 hover:bg-green-700 transition rounded-lg py-1 px-3 text-sm'
+                            onClick={() => {editTask(todo._id, todo.title)}}
                         >
                           ✏️ Edit
                         </button>
                       </p>
                     </div>
                     {/* Delete Button */}
-                    <button 
+                    <button type='button'
                       className='bg-red-600 hover:bg-red-700 transition px-4 py-2 cursor-pointer rounded-lg text-sm font-medium'
-                      onClick={() => {deleteTask(todo.id)}}
+                      onClick={() => {deleteTask(todo._id)}}
                     >
                       Delete
                     </button>

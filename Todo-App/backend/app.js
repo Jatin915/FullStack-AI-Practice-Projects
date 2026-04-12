@@ -32,32 +32,6 @@ app.post('/api/tasks', async(req,res) => {
     }
 });
 
-// update todo OR rename task
-app.put('/api/tasks/:id', async(req,res) => {
-    try {
-        const id = req.params.id;
-        const newTitle = req.body.title;
-    
-        if(!newTitle) return res.json({message: "No title provided!"});
-    
-        let task = await todoModel.findOneAndUpdate({_id: id}, {title: newTitle}, {"document": "after"});
-        
-        if(!task) return res.status(404).json({
-            message: "Task not found!"
-        })
-
-        let renamedTask = await todoModel.findById(id);
-        res.send({
-            message: "Task renamed",
-            task: renamedTask
-        })
-    } catch(err) {
-        res.status(500).json({
-            message: "Error rename task",
-            error: err.message
-        })
-    }
-});
 
 // Toggle task completed status
 app.patch('/api/tasks/:id', async (req, res) => {
@@ -88,6 +62,35 @@ app.patch('/api/tasks/:id', async (req, res) => {
         });
     }
 });
+
+
+// update todo OR rename task
+app.put('/api/tasks/:id', async(req,res) => {
+    try {
+        const id = req.params.id;
+        const newTitle = req.body.title;
+    
+        if(!newTitle) return res.json({message: "No title provided!"});
+    
+        let task = await todoModel.findOneAndUpdate({_id: id}, {title: newTitle}, {"document": "after"});
+        
+        if(!task) return res.status(404).json({
+            message: "Task not found!"
+        })
+
+        let renamedTask = await todoModel.findById(id);
+        res.send({
+            message: "Task renamed",
+            task: renamedTask
+        })
+    } catch(err) {
+        res.status(500).json({
+            message: "Error rename task",
+            error: err.message
+        })
+    }
+});
+
 
 // delete task
 app.delete('/api/tasks/:id', async(req,res) => {
