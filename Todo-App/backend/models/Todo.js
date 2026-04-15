@@ -14,6 +14,11 @@ const todoSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+
+    userID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     }
 });
 
