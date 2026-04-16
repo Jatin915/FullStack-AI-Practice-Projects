@@ -1,18 +1,20 @@
 const todoModel = require('../models/Todo');
 
 const displayTasks = async(req,res) => {
-    let tasks = await todoModel.find();
+
+    let tasks = await todoModel.find({userId: req.userId});
     res.send(tasks);
 }
 
 
 const createTask = async(req,res) => {
     try {
-        const { title } = req.body;
+        const {title} = req.body;
         if(!title) return res.status(501).json({message: "Task cannot be empty!"});
     
         let newTask = await todoModel.create({
-            title
+            title,
+            userId: req.userId
         });
     
         res.send({

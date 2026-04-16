@@ -16,7 +16,7 @@ const todoSchema = new mongoose.Schema({
         default: Date.now
     },
 
-    userID: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }
