@@ -2,9 +2,30 @@ import axios from "axios";
 
 // Create axios instance
 const api = axios.create({
-  baseURL: "/api"
+  baseURL: "/api",
+  withCredentials: true
 });
 
+
+// login user
+export const loginUser = async (formData) => {
+  try {
+      await api.post("/auth/login", formData);
+      
+    } catch(err) {
+      throw new Error(err.message);
+  }
+}
+
+
+// signup user
+export const signupUser = async(formData) => {
+  try {
+      await api.post("/auth/signup", formData);
+  } catch(err) {
+      throw new Error(err.message);
+    }
+}
 
 // Get all tasks
 export const getTasks = async () => {
