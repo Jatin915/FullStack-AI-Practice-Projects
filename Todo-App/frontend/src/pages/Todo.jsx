@@ -3,9 +3,24 @@ import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
 
 import { getTasks, addTask, updateTask, toggleTaskStatus, deleteTaskById } from "../services/api";
+import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../services/api";
 
 
 const Todo = () => {
+  const navigate = useNavigate();
+
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      navigate("/login");
+    } catch (err) {
+      console.log(err);
+      alert("Logout failed! check console for details");
+    }
+  };
+
   const [task, setTask] = useState("");
   const [todos, setTodos] = useState([]);
   const [buttonToggle, setbuttonToggle] = useState("Add");
@@ -97,7 +112,14 @@ const Todo = () => {
       {/* Main Card */}
       <div className="w-150 h-[90%] bg-zinc-900 rounded-2xl p-6 shadow-lg border border-zinc-800 flex flex-col">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-6 relative">
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="absolute top-0 right-0 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+          >
+            Logout
+          </button>
           <h1 className="text-4xl font-semibold text-center tracking-wide">
             📝 Todo Web App
           </h1>

@@ -6,6 +6,15 @@ const api = axios.create({
   withCredentials: true
 });
 
+// signup user
+export const signupUser = async(formData) => {
+  try {
+      await api.post("/auth/signup", formData);
+  } catch(err) {
+      throw new Error(err.message);
+    }
+}
+
 
 // login user
 export const loginUser = async (formData) => {
@@ -18,14 +27,15 @@ export const loginUser = async (formData) => {
 }
 
 
-// signup user
-export const signupUser = async(formData) => {
+// logout user
+export const logoutUser = async () => {
   try {
-      await api.post("/auth/signup", formData);
-  } catch(err) {
-      throw new Error(err.message);
-    }
-}
+    const response = await api.post("/auth/logout");
+    return response;
+  } catch (err) {
+    throw err;
+  }
+};
 
 // Get all tasks
 export const getTasks = async () => {
