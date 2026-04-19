@@ -25,15 +25,21 @@ const Todo = () => {
   const [todos, setTodos] = useState([]);
   const [buttonToggle, setbuttonToggle] = useState("Add");
   const [editId, setEditId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   //display tasks
   const fetchTasks = async () => {
     try {
-      const data = await getTasks();
-      setTodos(data);
+        setLoading(true);
+        const data = await getTasks();
+        setTodos(data);
     } catch (err) {
-      console.log(err);
-      alert("Error displaying tasks! check console window for more details");
+        console.log(err);
+        alert("Please login first!");
+        navigate("/login");
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -107,6 +113,24 @@ const Todo = () => {
     }
   }
 
+  // Loading UI
+  if (loading) {
+    return (
+      <div className="h-screen w-screen bg-linear-to-br from-zinc-950 to-zinc-900 text-white flex justify-center items-center">
+        <div className="flex flex-col items-center gap-3">
+
+          {/* Spinner */}
+          <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+
+          <p className="text-lg text-zinc-300">
+            Loading tasks...
+          </p>
+
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen w-screen bg-linear-to-br from-zinc-950 to-zinc-900 text-white flex justify-center items-center p-6 overflow-hidden">
       {/* Main Card */}
@@ -143,8 +167,6 @@ const Todo = () => {
           deleteTask={deleteTask}
         />
 
-        {/* Divider */}
-        <div className="h-px bg-zinc-800 mb-5"></div>
       </div>
     </div>
   );

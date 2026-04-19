@@ -1,12 +1,15 @@
 const todoModel = require('../models/Todo');
 
 const displayTasks = async(req,res) => {
-
-    let tasks = await todoModel.find({userId: req.userId});
-    res.send(tasks);
+    try {
+        let tasks = await todoModel.find({userId: req.userId});
+        res.send(tasks);
+    } catch(err) {
+        throw new Error(err.message);
+    }
 }
 
-
+    
 const createTask = async(req,res) => {
     try {
         const {title} = req.body;

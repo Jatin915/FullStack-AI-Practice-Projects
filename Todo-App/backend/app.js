@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 app.use(express.json());
 app.use(cookieParser());
@@ -15,7 +18,9 @@ app.use('/api/tasks', todoRoutes);
 
 app.use('/api/auth', authRoutes);
 
-app.listen(3000, (err) => {
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, (err) => {
     if(err) throw err;
-    else console.log("Server running on Port 3000");
+    else console.log(`Server running on Port ${PORT}`);
 })

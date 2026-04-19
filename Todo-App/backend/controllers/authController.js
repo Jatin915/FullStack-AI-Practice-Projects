@@ -27,10 +27,7 @@ const signupUser = async (req,res) => {
             password: hashedPassword
         });
 
-        const token = jwt.sign(
-            { userId: newUser._id },
-            "secretToken"
-        );
+        const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
 
         res.cookie("token", token);
 
@@ -66,10 +63,7 @@ const loginUser = async (req,res) => {
             })
         }
 
-        const token = jwt.sign(
-            { userId: user._id },
-            "secretToken"
-        );
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
         res.cookie("token", token);
 
