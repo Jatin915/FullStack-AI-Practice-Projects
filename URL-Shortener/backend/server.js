@@ -1,11 +1,12 @@
 const express = require("express");
 const { nanoid } = require("nanoid");
-
+const db = require('./config/db');
 const app = express();
+const url = require('./models/Url');
 
 app.use(express.json());
-
-const urlDatabase = {};
+db();
+// const urlDatabase = {};
 
 // Home Route
 app.get("/", (req, res) => {
@@ -13,7 +14,7 @@ app.get("/", (req, res) => {
 });
 
 // Create Short URL
-app.post("/shorten", (req, res) => {
+app.post("/shorten", async(req, res) => {
 
     const { originalUrl } = req.body;
 
@@ -28,33 +29,37 @@ app.post("/shorten", (req, res) => {
     const shortCode = nanoid(6);
 
     // Store in Memory
-    urlDatabase[shortCode] = originalUrl;
+    // urlDatabase[shortCode] = originalUrl;
+
+    const newUrl = await url.create({
+        originalUrl,
+        shortCode
+    });
 
     // Send Response
     res.json({
-        shortUrl: `http://localhost:5000/${shortCode}`,
+        shortUrl: `http://localhost:5000/${newUrl.shortCode}`,
         originalUrl
     });
-
 });
 
 // Redirect Route
-app.get("/:shortCode", (req, res) => {
+app.get("/:shortCode", async(req, res) => {
 
     const { shortCode } = req.params;
 
-    const originalUrl = urlDatabase[shortCode];
+    // const originalUrl = urlDatabase[shortCode];
+    const savedUrl = await url.findOne({shortCode});
 
     // If URL not found
-    if (!originalUrl) {
+    if (!savedUrl) {
         return res.status(404).json({
             message: "Short URL not found"
         });
     }
 
     // Redirect User
-    res.redirect(originalUrl);
-
+    res.redirect(savedUrl.originalUrl);
 });
 
 app.listen(5000, () => {
