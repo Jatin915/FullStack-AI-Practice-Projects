@@ -1,5 +1,6 @@
 const express = require("express");
 const { nanoid } = require("nanoid");
+const validUrl = require("valid-url");
 const db = require('./config/db');
 const app = express();
 const url = require('./models/Url');
@@ -16,21 +17,42 @@ app.get("/", (req, res) => {
 // Create Short URL
 app.post("/shorten", async(req, res) => {
 
-    const { originalUrl } = req.body;
+    const { originalUrl, customCode } = req.body;
 
-    // Validation
+    // check url exists
     if (!originalUrl) {
         return res.status(400).json({
             message: "Original URL is required"
         });
     }
 
-    // Generate Short Code
-    const shortCode = nanoid(6);
+    // validate
+    if(!validUrl.isUri(originalUrl)) {
+        return res.status(400).json({
+            message: "Invalid Url"
+        })
+    }
 
-    // Store in Memory
-    // urlDatabase[shortCode] = originalUrl;
+    let shortCode;
+    // if custom code provided
+    if(customCode) {
+        // check duplicate
+        const existingCode = await url.findOne(
+            {shortCode: customCode}
+        );
 
+        if(existingCode) {
+            return res.status(400).json({
+                message: "Custom code already exists!"
+            })
+        }
+
+        shortCode = customCode;
+    } else {
+        shortCode = nanoid(6);
+    }
+
+    // create document
     const newUrl = await url.create({
         originalUrl,
         shortCode
@@ -48,7 +70,6 @@ app.get("/:shortCode", async(req, res) => {
 
     const { shortCode } = req.params;
 
-    // const originalUrl = urlDatabase[shortCode];
     const savedUrl = await url.findOne({shortCode});
 
     // If URL not found
