@@ -5,11 +5,17 @@ const postSchema = new mongoose.Schema({
         type: String
     },
     caption: {
-        type: String
+        type: String,
+        trim: true
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: true
+    },
+    publicId: {
+        type: String,
+        required: true
     },
     likes: [
         {
