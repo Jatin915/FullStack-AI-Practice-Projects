@@ -9,11 +9,27 @@ const uploadImage = async (req, res) => {
             });
         }
         
+        const caption = req.body.caption;
+        const userId = req.user._id;
         const result = await cloudinary.uploader.upload(req.file.path);
+        const image = result.secure_url;
+        const publicId = result.public_id;
+
+        // console.log("caption: ",caption);
+        // console.log("userId: ",userId);
+        // console.log("image: ",image);
+        // console.log("publicId: ",publicId);
+
+        const newPost = await postModel.create({
+            image,
+            caption,
+            userId,
+            publicId
+        });
 
         return res.status(200).json({
-            message: "Image uploaded successfully",
-            imageUrl: result.secure_url
+            message: "Post created successfully",
+            Post: newPost
         });
         
     } catch(error) {
