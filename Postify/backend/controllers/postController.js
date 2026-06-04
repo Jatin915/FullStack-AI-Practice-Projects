@@ -39,4 +39,23 @@ const uploadImage = async (req, res) => {
         });
     }
 };
-module.exports = uploadImage;
+
+
+const allPosts = async (req,res) => {
+    try {
+        
+        const posts = await postModel.find().populate("userId", "username profilePic").sort({ createdAt: -1 });
+        return res.status(200).json({
+            posts
+        });
+
+    } catch(err) {
+        console.log(err);
+        return res.status(500).json({
+            message: "Server error"
+        });
+    }
+}
+
+
+module.exports = { uploadImage, allPosts };
