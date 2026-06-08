@@ -118,4 +118,57 @@ const likePost = async (req,res) => {
 }
 
 
-module.exports = { uploadImage, allPosts, likePost };
+const commentPost = async (req,res) => {
+    try {
+
+        const userId = req.user._id;
+        const { postId } = req.params;
+        const { text } = req.body;
+
+        if(!text || !text.trim()) {
+            return res.status(400).json({
+                message: "Comment cannot be empty"
+            });
+        }
+    
+        const updatedPost = await postModel.findByIdAndUpdate(
+            postId,
+            {
+                $push: 
+                {
+                    comments: 
+                    {
+                        userId,
+                        text
+                    }
+    
+                }
+            },
+            {
+                returnDocument: "after"
+            }
+        ).populate("comments.userId", "username profilePic");
+    
+        if(!updatedPost) {
+            return res.status(404).json({
+                message: "Post not found!"
+            })
+        }
+        
+        return res.status(200).json({
+            message: "Comment added successfully",
+            comment: updatedPost.comments[updatedPost.comments.length-1],
+            commentsCount: updatedPost.comments.length
+        });
+
+
+    } catch(error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server error!"
+        })
+    }
+}
+
+
+module.exports = { uploadImage, allPosts, likePost, commentPost };
