@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { uploadImage, allPosts, likePost, commentPost } = require('../controllers/postController');
+const { uploadImage, allPosts, likePost, commentPost, deleteComment } = require('../controllers/postController');
 const protectRoute = require('../middleware/protectRoute');
 const upload = require('../middleware/uploadMiddleware');
 
@@ -24,5 +24,10 @@ router.post("/:postId/comment",
     protectRoute,
     commentPost
 );
+
+router.put("/:postId/comment/:commentId",
+    protectRoute,
+    deleteComment
+)
 
 module.exports = router;
