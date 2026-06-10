@@ -230,4 +230,48 @@ const deleteComment = async (req,res) => {
 }
 
 
-module.exports = { uploadImage, allPosts, likePost, commentPost, deleteComment };
+const deletePost = async (req,res) => {
+    try {
+
+        const { postId } = req.params;
+        const userId = req.user._id;
+
+        const post = await postModel.findById(postId);
+
+        if(!post) {
+            return res.status(404).json({
+                message: "Post not found!"
+            });
+        }
+
+        if(post.userId.toString() !== userId.toString()) {
+            return res.status(403).json({
+                message: "Only post owner can delete the post!"
+            });
+        }
+
+        await cloudinary.uploader.destroy(post.publicId);
+
+        const deletedPost = await postModel.findByIdAndDelete(postId);
+
+        if(!deletedPost) {
+            return res.status(400).json({
+                message: "Unable to delete post from database!"
+            });
+        }
+
+        return res.status(200).json({
+            message: "Post deleted successfully",
+            postId
+        });
+
+    } catch(error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server error"
+        });
+    }
+}
+
+
+module.exports = { uploadImage, allPosts, likePost, commentPost, deleteComment, deletePost };
