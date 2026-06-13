@@ -6,10 +6,17 @@ const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 dotenv.config();
 connectDB();
 
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL,
+        credentials: true
+    })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);

@@ -1,11 +1,12 @@
+import { Routes, Route } from "react-router-dom";
+import Signup from "./pages/Signup";
+
 const App = () => {
-  return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-      <h1 className="text-4xl font-bold">
-        Postify 🚀
-      </h1>
-    </div>
-  );
+    return (
+      <Routes>
+        <Route path='/signup' element={<Signup />} />
+      </Routes>
+    );
 }
 
 export default App;
