@@ -7,13 +7,14 @@ const api = axios.create({
 
 // signup user
 export const signupUser = async(formData) => {
-  try {
-      const response = await api.post("/api/auth/signup", formData);
-      return response.data;
-  } catch(err) {
-    throw new Error(
-        err.response?.data?.message || "Something went wrong"
-    )}
+    const response = await api.post("/api/auth/signup", formData);
+    return response.data;
+}
+
+// login user
+export const loginUser = async(formData) => {
+    const response = await api.post("/api/auth/login", formData);
+    return response.data;
 }
 
 export default api;

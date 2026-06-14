@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signupUser } from "../services/api";
@@ -28,7 +27,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      await signupUser(formData);
+      const data = await signupUser(formData);
 
       // clear input fields
       setFormData({
@@ -41,7 +40,9 @@ const Signup = () => {
       navigate("/");
     } catch (err) {
       console.log(err);
-      setError(err.response?.data?.message || "Something went wrong");
+      setError(
+        err.response?.data?.message || "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
