@@ -1,6 +1,7 @@
 const userModel = require("../models/User");
 const bcrypt = require("bcryptjs");
 const generateToken = require("../utils/generateToken");
+const jwt = require("jsonwebtoken");
 
 // Signup controller
 const signup = async (req,res) => {
@@ -119,7 +120,6 @@ const login = async (req, res) => {
     }
 };
 
-
 // Logout controller
 const logout = (req,res) => {
     try {
@@ -138,4 +138,17 @@ const logout = (req,res) => {
     }
 }
 
-module.exports = { signup, login, logout };
+const me = async(req,res) => {
+    try {
+        return res.status(200).json({
+            user: req.user
+        });
+    } catch(error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server error!"
+        });
+    }
+}
+
+module.exports = { signup, login, logout, me };
