@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signupUser } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ const Signup = () => {
     setError("");
     setLoading(true);
 
+    const { setUser } = useAuth();
+
     try {
       const data = await signupUser(formData);
 
@@ -35,6 +38,8 @@ const Signup = () => {
         email: "",
         password: "",
       });
+
+      setUser(data.user);
 
       // redirect to home page
       navigate("/");

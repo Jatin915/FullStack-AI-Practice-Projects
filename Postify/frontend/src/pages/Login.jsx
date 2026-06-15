@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
-
+  const { setUser } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -27,13 +28,14 @@ const Login = () => {
 
     try {
       const data = await loginUser(formData);
-      console.log(data);
 
       // clear input fields
       setFormData({
         email: "",
         password: "",
       });
+
+      setUser(data.user);
 
       // redirect to home page
       navigate("/");
