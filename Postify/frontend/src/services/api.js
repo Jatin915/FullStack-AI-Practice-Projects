@@ -22,4 +22,9 @@ export const me = async() => {
     return response.data;
 }
 
+export const allPosts = async() => {
+    const response = await api.get("api/posts/")
+    return response.data;
+}
+
 export default api;
