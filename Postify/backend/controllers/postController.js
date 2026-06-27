@@ -86,10 +86,10 @@ const likePost = async (req,res) => {
                 }
             );
 
+            const post = await postModel.findById(postId);
+
             return res.status(200).json({
-                postId,
-                isLiked: false,
-                likesCount: updatedPost.likes.length
+                post
             });
         } else {
             let updatedPost = await postModel.findByIdAndUpdate(
@@ -101,11 +101,11 @@ const likePost = async (req,res) => {
                     returnDocument: "after"
                 }
             );
+
+            const post = await postModel.findById(postId);
             
             return res.status(200).json({
-                postId,
-                isLiked: true,
-                likesCount: updatedPost.likes.length
+                post
             })
         }
 

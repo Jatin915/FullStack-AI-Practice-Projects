@@ -27,4 +27,9 @@ export const allPosts = async() => {
     return response.data;
 }
 
+export const likePost = async(postId) => {
+    const response = await api.put(`api/posts/${postId}/like`);
+    return response.data;
+}
+
 export default api;

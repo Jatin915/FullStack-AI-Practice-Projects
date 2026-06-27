@@ -34,11 +34,12 @@ const Login = () => {
         email: "",
         password: "",
       });
-
+      
       setUser(data.user);
 
       // redirect to home page
       navigate("/");
+      
     } catch (err) {
       console.log(err);
       setError(

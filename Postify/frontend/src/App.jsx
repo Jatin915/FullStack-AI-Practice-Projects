@@ -8,7 +8,7 @@ import PublicRoute from "./routes/PublicRoute";
 import Layout from './components/layout/Layout';
 
 const App = () => {
-  const { loading, setLoading } = useAuth();
+  const { loading } = useAuth();
 
   if(loading) {
     return (

@@ -1,4 +1,14 @@
-const PostCard = ({ post }) => {
+// import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+// import { likePost } from "../../services/api";
+
+const PostCard = ({ post, onLike }) => {
+
+  const { user } = useAuth();
+
+  const isLiked = post.likes.includes(user._id);
+  const likesCount = post.likes.length;
+
   return (
     <article className="bg-white dark:bg-gray-900 mb-4 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
 
@@ -46,14 +56,28 @@ const PostCard = ({ post }) => {
         </p>
 
         <div className="flex items-center gap-6 text-sm text-gray-500">
+              
+          <button
+            onClick={() => onLike(post._id)}
+            className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-red-500 transition-colors"
+          >
+            <span className="text-xl">
+              {isLiked ? "❤️" : "🤍"}
+            </span>
+            <span>
+              {likesCount}
+            </span>
+          </button>
 
-          <span>
-            ❤️ {post.likes?.length || 0}
-          </span>
+          <button
+              className="flex items-center gap-2 text-sm font-medium text-gray-600"
+          >
+              <span className="text-xl">💬</span>
+              <span>
+                  {post.comments?.length}
+              </span>
 
-          <span>
-            💬 {post.comments?.length || 0}
-          </span>
+          </button>
 
         </div>
 
