@@ -32,4 +32,9 @@ export const likePost = async(postId) => {
     return response.data;
 }
 
+export const commentPost = async(postId, comment) => {
+    const response = await api.post(`api/posts/${postId}/comment`, {text:comment});
+    return response.data;
+}
+
 export default api;

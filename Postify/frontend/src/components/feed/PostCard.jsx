@@ -1,22 +1,16 @@
-// import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-// import { likePost } from "../../services/api";
 
-const PostCard = ({ post, onLike }) => {
-
+const PostCard = ({ post, onLike, onComment }) => {
   const { user } = useAuth();
 
-  const isLiked = post.likes.includes(user._id);
+  const isLiked = post.likes.includes(user?._id);
   const likesCount = post.likes.length;
 
   return (
     <article className="bg-white dark:bg-gray-900 mb-4 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
-
       {/* Header */}
       <div className="flex items-center gap-3 p-4">
-
         <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700 overflow-hidden">
-
           {post.userId?.profilePic ? (
             <img
               src={post.userId.profilePic}
@@ -24,7 +18,6 @@ const PostCard = ({ post, onLike }) => {
               className="w-full h-full object-cover"
             />
           ) : null}
-
         </div>
 
         <div>
@@ -36,7 +29,6 @@ const PostCard = ({ post, onLike }) => {
             {new Date(post.createdAt).toLocaleDateString()}
           </p>
         </div>
-
       </div>
 
       {/* Post Image */}
@@ -50,39 +42,26 @@ const PostCard = ({ post, onLike }) => {
 
       {/* Content */}
       <div className="p-4 space-y-3">
-
-        <p className="text-gray-800 dark:text-gray-200">
-          {post.caption}
-        </p>
+        <p className="text-gray-800 dark:text-gray-200">{post.caption}</p>
 
         <div className="flex items-center gap-6 text-sm text-gray-500">
-              
           <button
             onClick={() => onLike(post._id)}
             className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-red-500 transition-colors"
           >
-            <span className="text-xl">
-              {isLiked ? "❤️" : "🤍"}
-            </span>
-            <span>
-              {likesCount}
-            </span>
+            <span className="text-xl">{isLiked ? "❤️" : "🤍"}</span>
+            <span>{likesCount}</span>
           </button>
 
           <button
-              className="flex items-center gap-2 text-sm font-medium text-gray-600"
+            onClick={() => {onComment(post)}}
+            className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors"
           >
-              <span className="text-xl">💬</span>
-              <span>
-                  {post.comments?.length}
-              </span>
-
+            <span className="text-xl">💬</span>
+            <span>{post.comments.length}</span>
           </button>
-
         </div>
-
       </div>
-
     </article>
   );
 };

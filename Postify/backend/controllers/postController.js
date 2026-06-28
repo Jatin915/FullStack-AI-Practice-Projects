@@ -44,7 +44,7 @@ const uploadImage = async (req, res) => {
 const allPosts = async (req,res) => {
     try {
         
-        const posts = await postModel.find().populate("userId", "username profilePic").sort({ createdAt: -1 });
+        const posts = await postModel.find().populate("userId", "username profilePic").populate("comments.userId", "username profilePic").sort({ createdAt: -1 });
         return res.status(200).json({
             posts
         });
@@ -84,12 +84,10 @@ const likePost = async (req,res) => {
                 {
                     returnDocument: "after"
                 }
-            );
-
-            const post = await postModel.findById(postId);
+            ).populate("userId", "username profilePic");
 
             return res.status(200).json({
-                post
+                updatedPost
             });
         } else {
             let updatedPost = await postModel.findByIdAndUpdate(
@@ -100,12 +98,10 @@ const likePost = async (req,res) => {
                 {
                     returnDocument: "after"
                 }
-            );
-
-            const post = await postModel.findById(postId);
+            ).populate("userId", "username profilePic");
             
             return res.status(200).json({
-                post
+                updatedPost
             })
         }
 
@@ -147,7 +143,7 @@ const commentPost = async (req,res) => {
             {
                 returnDocument: "after"
             }
-        ).populate("comments.userId", "username profilePic");
+        ).populate("userId", "username profilePic").populate("comments.userId", "username profilePic");
     
         if(!updatedPost) {
             return res.status(404).json({
@@ -157,8 +153,7 @@ const commentPost = async (req,res) => {
         
         return res.status(200).json({
             message: "Comment added successfully",
-            comment: updatedPost.comments[updatedPost.comments.length-1],
-            commentsCount: updatedPost.comments.length
+            updatedPost
         });
 
 
@@ -213,12 +208,11 @@ const deleteComment = async (req,res) => {
             {
                 returnDocument: "after"
             }
-        );
+        ).populate("userId", "username profilePic");
 
         return res.status(200).json({
             message: "Comment deleted successfully",
-            commentId,
-            commentsCount: updatedPost.comments.length
+            updatedPost
         });
 
     } catch(error) {
@@ -252,7 +246,7 @@ const deletePost = async (req,res) => {
 
         await cloudinary.uploader.destroy(post.publicId);
 
-        const deletedPost = await postModel.findByIdAndDelete(postId);
+        const deletedPost = await postModel.findByIdAndDelete(postId).populate("userId", "username profilePic");
 
         if(!deletedPost) {
             return res.status(400).json({
@@ -262,7 +256,7 @@ const deletePost = async (req,res) => {
 
         return res.status(200).json({
             message: "Post deleted successfully",
-            postId
+            deletedPost
         });
 
     } catch(error) {
