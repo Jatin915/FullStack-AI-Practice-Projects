@@ -37,4 +37,9 @@ export const commentPost = async(postId, comment) => {
     return response.data;
 }
 
+export const deleteComment = async (postId, commentId) => {
+    const response = await api.put(`api/posts/${postId}/comment/${commentId}`);
+    return response.data;
+}
+
 export default api;

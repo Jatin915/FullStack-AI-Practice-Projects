@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const CommentModal = ({ post, onClose, onComment }) => {
+const CommentModal = ({ post, onClose, onComment, onDeleteComment, currentUser }) => {
   const [comment, setComment] = useState("");
 
   const handleSubmit = () => {
@@ -54,7 +54,7 @@ const CommentModal = ({ post, onClose, onComment }) => {
             </div>
           ) : (
             post.comments.map((commentItem) => (
-              <div key={commentItem._id} className="flex gap-3">
+              <div key={commentItem._id} className="flex items-start gap-3">
                 {commentItem.userId?.profilePic ? (
                   <img
                     src={commentItem.userId.profilePic}
@@ -65,13 +65,24 @@ const CommentModal = ({ post, onClose, onComment }) => {
                   <div className="w-10 h-10 rounded-full bg-zinc-300 dark:bg-zinc-700 shrink-0" />
                 )}
 
-                <div className="flex-1 md:max-w-fit rounded-2xl bg-zinc-100 dark:bg-zinc-800 px-4 py-3">
-                  <h4 className="font-semibold text-sm text-zinc-900 dark:text-white">
-                    {commentItem.userId?.username}
-                  </h4>
-                  <p className="text-zinc-700 dark:text-zinc-300 mt-1 wrap-break-word">
-                    {commentItem.text}
-                  </p>
+                <div className="flex-1 flex items-start justify-between gap-3 md:max-w-fit rounded-2xl bg-zinc-100 dark:bg-zinc-800 px-4 py-3">
+                  <div>
+                    <h4 className="font-semibold text-sm text-zinc-900 dark:text-white">
+                      {commentItem.userId?.username}
+                    </h4>
+                    <p className="text-zinc-700 dark:text-zinc-300 mt-1 wrap-break-word">
+                      {commentItem.text}
+                    </p>
+                  </div>
+                  {(currentUser?._id === commentItem.userId?._id || currentUser?._id === post.userId?._id) && (
+                    <button
+                      onClick={() => onDeleteComment(post._id, commentItem._id)}
+                      className="text-red-500 hover:text-red-600 transition text-sm"
+                      title="Delete Comment"
+                    >
+                      🗑️
+                    </button>
+                  )}
                 </div>
               </div>
             ))

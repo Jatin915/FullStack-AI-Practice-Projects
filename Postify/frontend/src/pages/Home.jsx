@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import PostCard from "../components/feed/PostCard";
-import { allPosts, commentPost, likePost } from "../services/api";
+import { allPosts, commentPost, likePost, deleteComment } from "../services/api";
 import CommentModal from "../components/comments/CommentModal";
+import { useAuth } from "../context/AuthContext";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+
+  const { user } = useAuth();
 
   const fetchPosts = async () => {
     try {
@@ -58,6 +61,24 @@ const Home = () => {
     }
   }
 
+
+  const handleDeleteComment = async (postId, commentId) => {
+    try {
+      
+      const data = await deleteComment(postId, commentId);
+
+      setPosts(prevPosts =>
+        prevPosts.map(post => 
+          post._id === data.updatedPost._id ? data.updatedPost : post
+        )
+      );
+
+    } catch(error) {
+      console.log(error);
+    }
+
+  }
+
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -81,6 +102,8 @@ const Home = () => {
             setSelectedPostId(null);
           }}
           onComment={handleComment}
+          onDeleteComment={handleDeleteComment}
+          currentUser={user}
         />
       )}
     </>

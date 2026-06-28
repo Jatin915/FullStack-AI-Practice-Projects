@@ -170,6 +170,7 @@ const deleteComment = async (req,res) => {
     try {
         const { postId, commentId } = req.params;
         const userId = req.user._id;
+        console.log(userId)
 
         const post = await postModel.findById(postId);
 
@@ -189,7 +190,7 @@ const deleteComment = async (req,res) => {
             });
         }
 
-        if(comment.userId.toString() !== userId.toString()) {
+        if(comment.userId.toString() !== userId.toString() && post.userId.toString() !== userId.toString()) {
             return res.status(403).json({
                 message: "You can only delete your own comment"
             });
@@ -208,7 +209,7 @@ const deleteComment = async (req,res) => {
             {
                 returnDocument: "after"
             }
-        ).populate("userId", "username profilePic");
+        ).populate("userId", "username profilePic").populate("comments.userId", "username profilePic");
 
         return res.status(200).json({
             message: "Comment deleted successfully",
