@@ -42,4 +42,9 @@ export const deleteComment = async (postId, commentId) => {
     return response.data;
 }
 
+export const deletePost = async (postId) => {
+    const response = await api.delete(`api/posts/${postId}/delete`);
+    return response.data;
+}
+
 export default api;

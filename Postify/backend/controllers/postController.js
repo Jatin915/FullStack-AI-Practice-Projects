@@ -247,7 +247,7 @@ const deletePost = async (req,res) => {
 
         await cloudinary.uploader.destroy(post.publicId);
 
-        const deletedPost = await postModel.findByIdAndDelete(postId).populate("userId", "username profilePic");
+        const deletedPost = await postModel.findByIdAndDelete(postId).populate("userId", "username profilePic").populate("comments.userId", "username profilePic");
 
         if(!deletedPost) {
             return res.status(400).json({

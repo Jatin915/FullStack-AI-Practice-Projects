@@ -1,7 +1,15 @@
 import { useState } from "react";
 
-const CommentModal = ({ post, onClose, onComment, onDeleteComment, currentUser }) => {
+const CommentModal = ({
+  post,
+  onClose,
+  onComment,
+  onDeleteComment,
+  currentUser,
+}) => {
   const [comment, setComment] = useState("");
+  const [activeMenu, setActiveMenu] = useState(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const handleSubmit = () => {
     const text = comment.trim();
@@ -13,11 +21,14 @@ const CommentModal = ({ post, onClose, onComment, onDeleteComment, currentUser }
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="w-full max-w-2xl h-[80vh] bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-zinc-200 dark:border-zinc-800">
-
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
           <div>
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Comments</h2>
-            <p className="text-sm text-zinc-500">{post?.comments.length} Comments</p>
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
+              Comments
+            </h2>
+            <p className="text-sm text-zinc-500">
+              {post?.comments.length} Comments
+            </p>
           </div>
 
           <button
@@ -40,8 +51,12 @@ const CommentModal = ({ post, onClose, onComment, onDeleteComment, currentUser }
           )}
 
           <div>
-            <h3 className="font-semibold text-zinc-900 dark:text-white">{post?.userId?.username}</h3>
-            <p className="text-sm text-zinc-500 line-clamp-1">{post?.caption}</p>
+            <h3 className="font-semibold text-zinc-900 dark:text-white">
+              {post?.userId?.username}
+            </h3>
+            <p className="text-sm text-zinc-500 line-clamp-1">
+              {post?.caption}
+            </p>
           </div>
         </div>
 
@@ -74,14 +89,69 @@ const CommentModal = ({ post, onClose, onComment, onDeleteComment, currentUser }
                       {commentItem.text}
                     </p>
                   </div>
-                  {(currentUser?._id === commentItem.userId?._id || currentUser?._id === post.userId?._id) && (
-                    <button
-                      onClick={() => onDeleteComment(post._id, commentItem._id)}
-                      className="text-red-500 hover:text-red-600 transition text-sm"
-                      title="Delete Comment"
-                    >
-                      🗑️
-                    </button>
+                  {(currentUser?._id === commentItem.userId?._id ||
+                    currentUser?._id === post.userId?._id) && (
+                    <div className="relative">
+                      <button
+                        onClick={() =>
+                          setActiveMenu(
+                            activeMenu === commentItem._id
+                              ? null
+                              : commentItem._id,
+                          )
+                        }
+                        className="w-8 h-8 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center transition"
+                        title="More"
+                      >
+                        ⋮
+                      </button>
+
+                      {activeMenu === commentItem._id && (
+                        <div className="absolute right-0 mt-2 w-32 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden z-20">
+                          <button
+                            onClick={() => {
+                              setConfirmDeleteId(commentItem._id);
+                              setActiveMenu(null);
+                            }}
+                            className="w-full px-4 py-2 text-left text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {confirmDeleteId && (
+                    <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center">
+                      <div className="w-[90%] max-w-sm rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-2xl border border-zinc-200 dark:border-zinc-700">
+                        <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
+                          Delete Comment?
+                        </h3>
+                        <p className="mt-2 text-sm text-zinc-500">
+                          This action cannot be undone.
+                        </p>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                          <button
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                          >
+                            Cancel
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              onDeleteComment(post._id, confirmDeleteId);
+                              setConfirmDeleteId(null);
+                            }}
+                            className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>

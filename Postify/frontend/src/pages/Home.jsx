@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PostCard from "../components/feed/PostCard";
-import { allPosts, commentPost, likePost, deleteComment } from "../services/api";
+import { allPosts, commentPost, likePost, deleteComment, deletePost } from "../services/api";
 import CommentModal from "../components/comments/CommentModal";
 import { useAuth } from "../context/AuthContext";
 
@@ -71,12 +71,29 @@ const Home = () => {
         prevPosts.map(post => 
           post._id === data.updatedPost._id ? data.updatedPost : post
         )
-      );
+      )
 
     } catch(error) {
       console.log(error);
     }
 
+  }
+
+
+  const handleDeletePost = async (postId) => {
+    try {
+
+      const data = await deletePost(postId);
+
+      setPosts(prevPosts => 
+        prevPosts.filter(post => 
+          post._id !== data.deletedPost._id
+        )
+      )
+
+    } catch(error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
@@ -91,6 +108,7 @@ const Home = () => {
           post={post}
           onLike={handleLike}
           onComment={handleOpenComments}
+          onDelete={handleDeletePost}
         />
       ))}
 
