@@ -2,6 +2,7 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import Profile from "./pages/Profile";
 import { useAuth } from "./context/AuthContext";
 import ProtectedRoute from './routes/ProtectedRoute'
 import PublicRoute from "./routes/PublicRoute";
@@ -17,6 +18,7 @@ const App = () => {
       </div>
     );
   }
+
     return (
       <Routes>
         
@@ -27,6 +29,7 @@ const App = () => {
 
         <Route element={<ProtectedRoute> <Layout /> </ProtectedRoute>}>
           <Route path='/' element={<Home />} />
+          <Route path='/profile' element={<Profile />} />
         </Route>
         
       </Routes>
