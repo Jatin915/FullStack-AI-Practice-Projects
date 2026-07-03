@@ -6,7 +6,7 @@ const upload = require('../middleware/uploadMiddleware');
 
 router.post("/upload", 
     protectRoute, 
-    upload.single("image"), 
+    upload.single("imageUrl"), 
     uploadImage
 );
 

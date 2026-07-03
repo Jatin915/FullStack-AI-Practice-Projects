@@ -1,6 +1,14 @@
 import { useEffect, useState, createContext, useContext } from "react";
 import { useAuth } from "./AuthContext";
-import { allPosts, commentPost, likePost, deleteComment, deletePost } from "../services/api";
+import {
+  uploadPost,
+  allPosts,
+  commentPost,
+  likePost,
+  deleteComment,
+  deletePost,
+  fetchProfile
+} from "../services/api";
 
 const PostsContext = createContext();
 
@@ -9,6 +17,22 @@ export const PostsProvider = ({ children }) => {
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
+
+  // Profile
+  const [profile, setProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+
+  const getProfile = async (userId) => {
+      try {
+        const data = await fetchProfile(userId);
+        setProfile(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setProfileLoading(false);
+      }
+  };
 
   const { loading, user } = useAuth();
 
@@ -33,6 +57,14 @@ export const PostsProvider = ({ children }) => {
           post._id === data.updatedPost._id ? data.updatedPost : post,
         ),
       );
+
+      setProfile((prev) => ({
+        ...prev,
+        posts: prev.posts.map(post => 
+          post._id === data.updatedPost._id ? data.updatedPost : post
+        )
+      }));
+
     } catch (err) {
       console.log(err);
     }
@@ -63,6 +95,14 @@ export const PostsProvider = ({ children }) => {
           post._id === data.updatedPost._id ? data.updatedPost : post,
         ),
       );
+
+      setProfile((prev) => ({
+        ...prev,
+        posts: prev.posts.map(post => 
+          post._id === data.updatedPost._id ? data.updatedPost : post
+        )
+      }));
+
     } catch (err) {
       console.log(err);
     }
@@ -77,6 +117,14 @@ export const PostsProvider = ({ children }) => {
           post._id === data.updatedPost._id ? data.updatedPost : post,
         ),
       );
+
+      setProfile((prev) => ({
+        ...prev,
+        posts: prev.posts.map(post => 
+          post._id === data.updatedPost._id ? data.updatedPost : post
+        )
+      }));
+
     } catch (error) {
       console.log(error);
     }
@@ -89,8 +137,55 @@ export const PostsProvider = ({ children }) => {
       setPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== data.deletedPost._id),
       );
+
+      setProfile((prev) => ({
+        ...prev,
+        posts: prev.posts.filter(post => 
+          post._id !== data.deletedPost._id
+        )
+      }));
+
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  // CREATE-POSTS
+  const handleOpenCreatePost = () => {
+    setIsCreatePostModalOpen(true);
+  };
+
+  const handleCloseCreatePost = () => {
+    setIsCreatePostModalOpen(false);
+  };
+
+  const handleCreatePost = async ({
+    caption,
+    selectedImage,
+    setCreating,
+    resetForm,
+  }) => {
+    try {
+      
+      console.log("setting setCreating true")
+      setCreating(true);
+
+      const formData = new FormData();
+      formData.append("imageUrl", selectedImage);
+      formData.append("caption", caption);
+
+      console.log("calling api...")
+      const data = await uploadPost(formData);
+
+      setPosts((prevPosts) => [data.post, ...prevPosts]);
+
+      resetForm();
+      handleCloseCreatePost();
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -114,8 +209,16 @@ export const PostsProvider = ({ children }) => {
         handleDeletePost,
         isCommentModalOpen,
         setIsCommentModalOpen,
+        isCreatePostModalOpen,
+        handleOpenCreatePost,
+        handleCloseCreatePost,
         selectedPost,
-        loading
+        handleCreatePost,
+        loadingPosts,
+        // profile
+        profile,
+        profileLoading,
+        getProfile
       }}
     >
       {children}

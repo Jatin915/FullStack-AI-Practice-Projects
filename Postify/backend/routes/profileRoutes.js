@@ -8,9 +8,4 @@ router.get("/:userId",
         userProfile
 );
 
-router.get("/posts/:userId",
-        protectRoute,
-        profilePost
-);
-
 module.exports = router;

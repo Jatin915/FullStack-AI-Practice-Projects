@@ -47,4 +47,20 @@ export const deletePost = async (postId) => {
     return response.data;
 }
 
+export const uploadPost = async (formData) => {
+    const response = await api.post("api/posts/upload", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        }
+    });
+    console.log(response.data)
+    return response.data;
+}
+
+export const fetchProfile = async (userId) => {
+    console.log("backend api call")
+    const response = await api.get(`/api/profile/${userId}`);
+    return response.data;
+}
+
 export default api;

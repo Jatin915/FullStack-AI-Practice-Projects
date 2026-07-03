@@ -29,7 +29,7 @@ const App = () => {
 
         <Route element={<ProtectedRoute> <Layout /> </ProtectedRoute>}>
           <Route path='/' element={<Home />} />
-          <Route path='/profile' element={<Profile />} />
+          <Route path='/profile/:userId' element={<Profile />} />
         </Route>
         
       </Routes>

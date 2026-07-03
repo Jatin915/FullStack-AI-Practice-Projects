@@ -1,12 +1,18 @@
 import { useState } from "react";
+import { usePosts } from "../../context/PostsContext";
+import { useAuth } from "../../context/AuthContext";
 
-const CommentModal = ({
-  post,
-  onClose,
-  onComment,
-  onDeleteComment,
-  currentUser,
-}) => {
+const CommentModal = () => {
+
+  const {
+    selectedPost,
+    handleComment,
+    handleDeleteComment,
+    handleCloseComments,
+  } = usePosts();
+
+  const { user } = useAuth();
+
   const [comment, setComment] = useState("");
   const [activeMenu, setActiveMenu] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
@@ -14,7 +20,7 @@ const CommentModal = ({
   const handleSubmit = () => {
     const text = comment.trim();
     if (!text) return;
-    onComment(post._id, text);
+    handleComment(selectedPost._id, text);
     setComment("");
   };
 
@@ -27,12 +33,12 @@ const CommentModal = ({
               Comments
             </h2>
             <p className="text-sm text-zinc-500">
-              {post?.comments.length} Comments
+              {selectedPost?.comments.length} Comments
             </p>
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleCloseComments}
             className="w-10 h-10 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
           >
             ✕
@@ -40,10 +46,10 @@ const CommentModal = ({
         </div>
 
         <div className="flex items-center gap-3 px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
-          {post?.userId?.profilePic ? (
+          {selectedPost?.userId?.profilePic ? (
             <img
-              src={post.userId.profilePic}
-              alt={post.userId.username}
+              src={selectedPost.userId.profilePic}
+              alt={selectedPost.userId.username}
               className="w-11 h-11 rounded-full object-cover"
             />
           ) : (
@@ -52,23 +58,23 @@ const CommentModal = ({
 
           <div>
             <h3 className="font-semibold text-zinc-900 dark:text-white">
-              {post?.userId?.username}
+              {selectedPost?.userId?.username}
             </h3>
             <p className="text-sm text-zinc-500 line-clamp-1">
-              {post?.caption}
+              {selectedPost?.caption}
             </p>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          {post?.comments.length === 0 ? (
+          {selectedPost?.comments.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center text-zinc-500 gap-2">
               <div className="text-5xl">💬</div>
               <h3 className="text-lg font-semibold">No comments yet</h3>
               <p>Be the first one to comment.</p>
             </div>
           ) : (
-            post.comments.map((commentItem) => (
+            selectedPost.comments.map((commentItem) => (
               <div key={commentItem._id} className="flex items-start gap-3">
                 {commentItem.userId?.profilePic ? (
                   <img
@@ -89,8 +95,8 @@ const CommentModal = ({
                       {commentItem.text}
                     </p>
                   </div>
-                  {(currentUser?._id === commentItem.userId?._id ||
-                    currentUser?._id === post.userId?._id) && (
+                  {(user?._id === commentItem.userId?._id ||
+                    user?._id === selectedPost.userId?._id) && (
                     <div className="relative">
                       <button
                         onClick={() =>
@@ -142,7 +148,7 @@ const CommentModal = ({
 
                           <button
                             onClick={() => {
-                              onDeleteComment(post._id, confirmDeleteId);
+                              handleDeleteComment(selectedPost._id, confirmDeleteId);
                               setConfirmDeleteId(null);
                             }}
                             className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white"

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const PostCard = ({ post, onLike, onComment, onDelete }) => {
   const { user } = useAuth();
@@ -10,11 +11,13 @@ const PostCard = ({ post, onLike, onComment, onDelete }) => {
   const isLiked = post.likes.includes(user?._id);
   const likesCount = post.likes.length;
 
+  const navigate = useNavigate();
+
   return (
     <article className="bg-white dark:bg-gray-900 mb-4 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
       {/* Header */}
       <div className="flex items-center gap-3 p-4">
-        <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700 overflow-hidden">
+        <div onClick={() => navigate(`/profile/${post.userId._id}`)} className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700 overflow-hidden cursor-pointer">
           {post.userId?.profilePic ? (
             <img
               src={post.userId.profilePic}
@@ -26,7 +29,7 @@ const PostCard = ({ post, onLike, onComment, onDelete }) => {
 
         <div className="flex justify-between w-full">
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">
+            <h3 onClick={() => navigate(`/profile/${post.userId._id}`)} className="cursor-pointer font-semibold text-gray-900 dark:text-white">
               {post.userId?.username}
             </h3>
 
@@ -98,9 +101,9 @@ const PostCard = ({ post, onLike, onComment, onDelete }) => {
       </div>
 
       {/* Post Image */}
-      {post.image && (
+      {post.imageUrl && (
         <img
-          src={post.image}
+          src={post.imageUrl}
           alt="post"
           className="w-full aspect-square object-cover"
         />
