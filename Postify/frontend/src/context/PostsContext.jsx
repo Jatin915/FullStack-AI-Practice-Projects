@@ -7,7 +7,8 @@ import {
   likePost,
   deleteComment,
   deletePost,
-  fetchProfile
+  fetchProfile,
+  updateProfile,
 } from "../services/api";
 
 const PostsContext = createContext();
@@ -18,23 +19,86 @@ export const PostsProvider = ({ children }) => {
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+
+  const { loading, user, setUser } = useAuth();
 
   // Profile
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
   const getProfile = async (userId) => {
-      try {
-        const data = await fetchProfile(userId);
-        setProfile(data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setProfileLoading(false);
-      }
+    try {
+      const data = await fetchProfile(userId);
+      setProfile(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setProfileLoading(false);
+    }
   };
 
-  const { loading, user } = useAuth();
+  const handleOpenEditProfile = () => {
+    setIsEditProfileModalOpen(true);
+  }
+
+  const handleCloseEditProfile = () => {
+    setIsEditProfileModalOpen(false);
+  }
+
+  const handleUpdateProfile = async ({
+    username,
+    bio,
+    selectedImage,
+    setSaving,
+    resetForm,
+  }) => {
+    setSaving(true);
+    try {
+      const formData = new FormData();
+
+      formData.append("username", username);
+
+      formData.append("bio", bio);
+
+      if (selectedImage) {
+        formData.append("profilePic", selectedImage);
+      }
+
+      const data = await updateProfile(formData);
+
+      // 1. Update AuthContext
+      setUser(data.user);
+
+      // 2. Update viewed profile
+      if (profile?.user._id === data.user._id) {
+        setProfile((prev) => ({
+          ...prev,
+          user: data.user,
+        }));
+      }
+
+      // 3. Update every post belonging to this user
+
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.userId._id === data.user._id
+            ? {
+                ...post,
+                userId: data.user,
+              }
+            : post,
+        ),
+      );
+
+      resetForm();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSaving(false);
+      handleCloseEditProfile();
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -60,11 +124,10 @@ export const PostsProvider = ({ children }) => {
 
       setProfile((prev) => ({
         ...prev,
-        posts: prev.posts.map(post => 
-          post._id === data.updatedPost._id ? data.updatedPost : post
-        )
+        posts: prev.posts.map((post) =>
+          post._id === data.updatedPost._id ? data.updatedPost : post,
+        ),
       }));
-
     } catch (err) {
       console.log(err);
     }
@@ -98,11 +161,10 @@ export const PostsProvider = ({ children }) => {
 
       setProfile((prev) => ({
         ...prev,
-        posts: prev.posts.map(post => 
-          post._id === data.updatedPost._id ? data.updatedPost : post
-        )
+        posts: prev.posts.map((post) =>
+          post._id === data.updatedPost._id ? data.updatedPost : post,
+        ),
       }));
-
     } catch (err) {
       console.log(err);
     }
@@ -120,11 +182,10 @@ export const PostsProvider = ({ children }) => {
 
       setProfile((prev) => ({
         ...prev,
-        posts: prev.posts.map(post => 
-          post._id === data.updatedPost._id ? data.updatedPost : post
-        )
+        posts: prev.posts.map((post) =>
+          post._id === data.updatedPost._id ? data.updatedPost : post,
+        ),
       }));
-
     } catch (error) {
       console.log(error);
     }
@@ -140,11 +201,8 @@ export const PostsProvider = ({ children }) => {
 
       setProfile((prev) => ({
         ...prev,
-        posts: prev.posts.filter(post => 
-          post._id !== data.deletedPost._id
-        )
+        posts: prev.posts.filter((post) => post._id !== data.deletedPost._id),
       }));
-
     } catch (error) {
       console.log(error);
     }
@@ -166,22 +224,20 @@ export const PostsProvider = ({ children }) => {
     resetForm,
   }) => {
     try {
-      
-      console.log("setting setCreating true")
+      console.log("setting setCreating true");
       setCreating(true);
 
       const formData = new FormData();
       formData.append("imageUrl", selectedImage);
       formData.append("caption", caption);
 
-      console.log("calling api...")
+      console.log("calling api...");
       const data = await uploadPost(formData);
 
       setPosts((prevPosts) => [data.post, ...prevPosts]);
 
       resetForm();
       handleCloseCreatePost();
-
     } catch (error) {
       console.log(error);
     } finally {
@@ -218,7 +274,11 @@ export const PostsProvider = ({ children }) => {
         // profile
         profile,
         profileLoading,
-        getProfile
+        getProfile,
+        isEditProfileModalOpen,
+        handleUpdateProfile,
+        handleOpenEditProfile,
+        handleCloseEditProfile
       }}
     >
       {children}

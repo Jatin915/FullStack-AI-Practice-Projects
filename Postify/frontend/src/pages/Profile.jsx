@@ -13,13 +13,13 @@ const Profile = () => {
     handleLike,
     handleOpenComments,
     handleDeletePost,
+    handleOpenEditProfile
   } = usePosts();
 
-  
   useEffect(() => {
     getProfile(userId);
   }, [userId]);
-  
+
   if (profileLoading) {
     return (
       <div className="h-screen text-2xl flex items-center justify-center">
@@ -56,19 +56,24 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="flex flex-col items-center">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            Total Posts
-          </h2>
-          <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
-            {myPosts.length}
-          </p>
+        <div className="flex flex-col items-end gap-4">
+          <button
+            onClick={handleOpenEditProfile}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition"
+          >
+            Edit Profile
+          </button>
+
+          <div className="flex flex-col items-center">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Total Posts
+            </h2>
+            <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
+              {myPosts.length}
+            </p>
+          </div>
         </div>
       </div>
-
-      {/* <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8 text-center">
-        
-      </div> */}
 
       <section>
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">

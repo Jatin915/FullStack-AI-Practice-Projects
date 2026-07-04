@@ -63,4 +63,13 @@ export const fetchProfile = async (userId) => {
     return response.data;
 }
 
+export const updateProfile = async (formData) => {
+  const response = await api.put("/api/profile/", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
 export default api;
