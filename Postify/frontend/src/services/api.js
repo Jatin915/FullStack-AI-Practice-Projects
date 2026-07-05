@@ -53,12 +53,10 @@ export const uploadPost = async (formData) => {
             "Content-Type": "multipart/form-data",
         }
     });
-    console.log(response.data)
     return response.data;
 }
 
 export const fetchProfile = async (userId) => {
-    console.log("backend api call")
     const response = await api.get(`/api/profile/${userId}`);
     return response.data;
 }
@@ -70,6 +68,11 @@ export const updateProfile = async (formData) => {
     },
   });
   return response.data;
+};
+
+export const logout = async () => {
+    const response = await api.get("/api/auth/logout");
+    return response.data;
 };
 
 export default api;

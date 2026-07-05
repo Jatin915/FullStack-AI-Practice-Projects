@@ -121,13 +121,14 @@ export const PostsProvider = ({ children }) => {
           post._id === data.updatedPost._id ? data.updatedPost : post,
         ),
       );
-
-      setProfile((prev) => ({
-        ...prev,
-        posts: prev.posts.map((post) =>
-          post._id === data.updatedPost._id ? data.updatedPost : post,
-        ),
-      }));
+      if(profile) {
+        setProfile((prev) => ({
+          ...prev,
+          posts: prev.posts.map((post) =>
+            post._id === data.updatedPost._id ? data.updatedPost : post,
+          ),
+        }));
+      }
     } catch (err) {
       console.log(err);
     }
@@ -158,13 +159,14 @@ export const PostsProvider = ({ children }) => {
           post._id === data.updatedPost._id ? data.updatedPost : post,
         ),
       );
-
-      setProfile((prev) => ({
-        ...prev,
-        posts: prev.posts.map((post) =>
-          post._id === data.updatedPost._id ? data.updatedPost : post,
-        ),
-      }));
+      if(profile) {
+        setProfile((prev) => ({
+          ...prev,
+          posts: prev.posts.map((post) =>
+            post._id === data.updatedPost._id ? data.updatedPost : post,
+          ),
+        }));
+      }
     } catch (err) {
       console.log(err);
     }
@@ -179,13 +181,14 @@ export const PostsProvider = ({ children }) => {
           post._id === data.updatedPost._id ? data.updatedPost : post,
         ),
       );
-
-      setProfile((prev) => ({
-        ...prev,
-        posts: prev.posts.map((post) =>
-          post._id === data.updatedPost._id ? data.updatedPost : post,
-        ),
-      }));
+      if(profile) {
+        setProfile((prev) => ({
+          ...prev,
+          posts: prev.posts.map((post) =>
+            post._id === data.updatedPost._id ? data.updatedPost : post,
+          ),
+        }));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -198,11 +201,12 @@ export const PostsProvider = ({ children }) => {
       setPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== data.deletedPost._id),
       );
-
-      setProfile((prev) => ({
-        ...prev,
-        posts: prev.posts.filter((post) => post._id !== data.deletedPost._id),
-      }));
+      if(profile) {
+        setProfile((prev) => ({
+          ...prev,
+          posts: prev.posts.filter((post) => post._id !== data.deletedPost._id),
+        }));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -245,6 +249,17 @@ export const PostsProvider = ({ children }) => {
     }
   };
 
+  // logout
+  const resetPostsContext = () => {
+    setPosts([]);
+    setProfile(null);
+    setSelectedPostId(null);
+
+    setIsCommentModalOpen(false);
+    setIsCreatePostModalOpen(false);
+    setIsEditProfileModalOpen(false);
+};
+
   useEffect(() => {
     if (!loading && user) {
       fetchPosts();
@@ -278,7 +293,9 @@ export const PostsProvider = ({ children }) => {
         isEditProfileModalOpen,
         handleUpdateProfile,
         handleOpenEditProfile,
-        handleCloseEditProfile
+        handleCloseEditProfile,
+        // logout
+        resetPostsContext
       }}
     >
       {children}

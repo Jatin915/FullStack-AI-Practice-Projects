@@ -1,6 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import {usePosts} from "../../context/PostsContext";
 
 const Navbar = () => {
+
+  const navigate = useNavigate();
+  const {resetPostsContext} = usePosts();
+  const {handleLogout} = useAuth();
+
+  async function logoutUser () {
+    await handleLogout();
+    resetPostsContext();
+    navigate("/login");
+  }
+
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/80">
       <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -18,7 +31,9 @@ const Navbar = () => {
             🌙 Theme
           </button>
 
-          <button className="hidden md:block px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium transition-all hover:bg-red-600 shadow-sm">
+          <button
+            onClick={handleLogout}
+            className="cursor-pointer md:block px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium transition-all hover:bg-red-600 shadow-sm">
             Logout
           </button>
 

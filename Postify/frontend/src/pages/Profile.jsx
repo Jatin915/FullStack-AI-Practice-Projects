@@ -2,9 +2,11 @@ import { usePosts } from "../context/PostsContext";
 import PostCard from "../components/feed/PostCard";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
   const { userId } = useParams();
+  const {user} = useAuth();
 
   const {
     profile,
@@ -44,7 +46,7 @@ const Profile = () => {
             <div className="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600 mb-4" />
           )}
 
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center items-start">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
               {profile.user.username}
             </h1>
@@ -57,12 +59,12 @@ const Profile = () => {
         </div>
 
         <div className="flex flex-col items-end gap-4">
-          <button
+          {(user._id === profile?.user._id) && <button
             onClick={handleOpenEditProfile}
             className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition"
           >
             Edit Profile
-          </button>
+          </button>}
 
           <div className="flex flex-col items-center">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
