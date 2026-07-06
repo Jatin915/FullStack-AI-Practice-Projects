@@ -29,10 +29,10 @@ const EditProfileModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900 bg-opacity-60">
-      <div className="bg-zinc-950 text-zinc-100 w-full max-w-md mx-4 rounded-2xl shadow-xl flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-3 backdrop-blur-sm sm:p-4">
+      <div className="w-full max-h-[90dvh] max-w-md overflow-y-auto rounded-[1.75rem] border border-zinc-200/80 bg-white shadow-2xl dark:border-zinc-800/80 dark:bg-zinc-950">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
+        <div className="flex items-center justify-between border-b border-zinc-200/80 px-4 py-3.5 dark:border-zinc-800/80 sm:px-6 sm:py-4">
           <h2 className="text-lg font-semibold">Edit Profile</h2>
           <button
             onClick={handleCloseEditProfile}
@@ -73,13 +73,19 @@ const EditProfileModal = () => {
           </div>
           {/* Username */}
           <div className="w-full mb-3">
-            <label className="block text-sm text-zinc-400 mb-1" htmlFor="edit-username">
-              Username
-            </label>
+            <div className="mb-1 flex items-center justify-between">
+              <label className="block text-sm text-zinc-500 dark:text-zinc-400" htmlFor="edit-username">
+                Username
+              </label>
+              <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                {username.length}/30
+              </span>
+            </div>
             <input
               id="edit-username"
               type="text"
-              className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-blue-500 transition"
+              maxLength={30}
+              className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
               value={username}
               onChange={e => setUsername(e.target.value)}
               disabled={saving}
@@ -87,12 +93,18 @@ const EditProfileModal = () => {
           </div>
           {/* Bio */}
           <div className="w-full mb-2">
-            <label className="block text-sm text-zinc-400 mb-1" htmlFor="edit-bio">
-              Bio
-            </label>
+            <div className="mb-1 flex items-center justify-between">
+              <label className="block text-sm text-zinc-500 dark:text-zinc-400" htmlFor="edit-bio">
+                Bio
+              </label>
+              <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                {bio.length}/150
+              </span>
+            </div>
             <textarea
               id="edit-bio"
-              className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-blue-500 transition resize-none"
+              maxLength={150}
+              className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition resize-none"
               rows={3}
               value={bio}
               onChange={e => setBio(e.target.value)}

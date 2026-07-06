@@ -1,42 +1,50 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import {usePosts} from "../../context/PostsContext";
+import { useTheme } from "../../context/ThemeContext";
 
 const Navbar = () => {
-
+  
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const {resetPostsContext} = usePosts();
   const {handleLogout} = useAuth();
 
-  async function logoutUser () {
-    await handleLogout();
-    resetPostsContext();
-    navigate("/login");
+  async function logoutUser() {
+    const success = await handleLogout();
+
+    if (success !== false) {
+      resetPostsContext();
+      navigate("/login");
+    }
   }
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/80">
-      <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 h-14 sm:h-16 border-b border-zinc-200/80 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-xl supports-[backdrop-filter]:bg-white/85 dark:supports-[backdrop-filter]:bg-black/85">
+      <div className="w-full max-w-2xl mx-auto h-full px-3 sm:px-5 flex items-center justify-between gap-3">
 
         <Link
           to="/"
-          className="text-2xl font-extrabold bg-linear-to-r from-violet-600 to-blue-500 bg-clip-text text-transparent tracking-tight"
+          className="text-[1.65rem] sm:text-3xl leading-none font-black tracking-[-0.055em] text-zinc-950 dark:text-white select-none transition-opacity duration-200 hover:opacity-70 shrink-0"
         >
           Postify
         </Link>
 
-        <div className="flex items-center gap-3">
-
-          <button className="px-4 py-2 rounded-xl border border-gray-200 bg-gray-100 text-sm font-medium transition-all hover:bg-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800">
-            🌙 Theme
-          </button>
-
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
-            onClick={handleLogout}
-            className="cursor-pointer md:block px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium transition-all hover:bg-red-600 shadow-sm">
+            onClick={toggleTheme}
+            className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-zinc-800 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-90 transition-all duration-150 touch-manipulation"
+            aria-label="Toggle Theme"
+          >
+            <span className="text-[1.1rem] sm:text-xl leading-none">{theme === "dark" ? "☀️" : "🌙"}</span>
+          </button>
+          <button
+            onClick={logoutUser}
+            aria-label="Logout"
+            className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg bg-zinc-950 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-95 text-xs sm:text-sm font-semibold transition-all duration-150 touch-manipulation whitespace-nowrap"
+          >
             Logout
           </button>
-
         </div>
 
       </div>
