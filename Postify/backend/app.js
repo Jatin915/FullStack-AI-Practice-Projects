@@ -17,8 +17,15 @@ app.use(
         credentials: true
     })
 );
+
+
 app.use(express.json());
 app.use(cookieParser());
+
+app.get("/api/health", (req, res) => {
+    res.status(200).json({ message: "Postify API is running" });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/profile", profileRoutes);

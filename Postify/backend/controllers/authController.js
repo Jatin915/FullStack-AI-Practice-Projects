@@ -4,155 +4,158 @@ const generateToken = require("../utils/generateToken");
 const jwt = require("jsonwebtoken");
 
 // Signup controller
-const signup = async (req,res) => {
-    try {
-        const { username, email, password } = req.body;
+const signup = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
 
-        //validation
-        if(!username || !email || !password) {
-            return res.status(400).json({
-                message: "All fields are required!"
-            });
-        }
-
-        // Existing user check
-        const existingUser = await userModel.findOne({email});
-
-        if(existingUser) {
-            return res.status(400).json({
-                message: "User already exists!"
-            });
-        }
-
-        // Hash Password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create user
-        const newUser = await userModel.create({
-            username,
-            email: email.replace(/\s+/g, ""),
-            password: hashedPassword
-        });
-
-        // Generate token
-        const token = generateToken(newUser._id);
-
-        // Store cookie
-        res.cookie("token", token, {
-            httpOnly: true,
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
-
-        // Response
-        res.status(201).json({
-            message: "User registered successfully",
-            user: {
-                id: newUser._id,
-                username: newUser.username,
-                email: newUser.email,
-                bio: newUser.bio,
-                profilePic: newUser.profilePic
-            }
-        });
-
-
-    } catch(err) {
-        console.log(err);
-        res.status(500).json({
-            message: "Server Error"
-        });
+    //validation
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        message: "All fields are required!",
+      });
     }
-}
+
+    // Existing user check
+    const existingUser = await userModel.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User already exists!",
+      });
+    }
+
+    // Hash Password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    const newUser = await userModel.create({
+      username,
+      email: email.replace(/\s+/g, ""),
+      password: hashedPassword,
+    });
+
+    // Generate token
+    const token = generateToken(newUser._id);
+
+    // Store cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Response
+    res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        bio: newUser.bio,
+        profilePic: newUser.profilePic,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+};
 
 // Login controller
 const login = async (req, res) => {
-    try {
-        let { email, password } = req.body;
+  try {
+    let { email, password } = req.body;
 
-        // Sanitize email
-        email = email.replace(/\s+/g, "").toLowerCase();
+    // Sanitize email
+    email = email.replace(/\s+/g, "").toLowerCase();
 
-        // Validation
-        if (!email || !password) {
-            return res.status(400).json({
-                message: "All fields are required"
-            });
-        }
-
-        // Find user
-        const user = await userModel.findOne({ email });
-        if (!user) {
-            return res.status(400).json({
-                message: "Invalid credentials"
-            });
-        }
-
-        // Compare password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({
-                message: "Invalid credentials"
-            });
-        }
-
-        // Generate token
-        const token = generateToken(user._id);
-
-        // Store cookie
-        res.cookie("token", token, {
-            httpOnly: true,
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
-
-        // Response
-        res.status(200).json({
-            message: "Login successful",
-            user: {
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                bio: user.bio,
-                profilePic: user.profilePic
-            }
-        });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "Server Error"
-        });
+    // Validation
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
     }
+
+    // Find user
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
+    }
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    // Store cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Response
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
+        profilePic: user.profilePic,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
 };
 
 // Logout controller
-const logout = (req,res) => {
-    try {
-            
-        res.clearCookie("token");
-            
-        return res.status(200).json({
-            message: "Logged out successfully"
-        });
+const logout = (req, res) => {
+  try {
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+    });
 
-    } catch(error) {
-        console.log(error);
-        return res.status(500).json({
-            message: "Server error!"
-        });
-    }
-}
+    return res.status(200).json({
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Server error!",
+    });
+  }
+};
 
-const me = async(req,res) => {
-    try {
-        return res.status(200).json({
-            user: req.user
-        });
-    } catch(error) {
-        console.log(error);
-        return res.status(500).json({
-            message: "Server error!"
-        });
-    }
-}
+const me = async (req, res) => {
+  try {
+    return res.status(200).json({
+      user: req.user,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Server error!",
+    });
+  }
+};
 
 module.exports = { signup, login, logout, me };
