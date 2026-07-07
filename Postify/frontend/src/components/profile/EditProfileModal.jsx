@@ -1,15 +1,28 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { usePosts } from "../../context/PostsContext";
 
 const EditProfileModal = () => {
   const { user } = useAuth();
-  const { handleUpdateProfile, handleCloseEditProfile } = usePosts();
-  const [username, setUsername] = useState(user.username);
+  const {
+    handleUpdateProfile,
+    handleCloseEditProfile,
+    isEditProfileModalOpen,
+  } = usePosts();
+  const [username, setUsername] = useState(user?.username || "");
   const [bio, setBio] = useState(user.bio || "");
   const [selectedImage, setSelectedImage] = useState(null);
   const [saving, setSaving] = useState(false);
+
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!isEditProfileModalOpen || !user?._id) return;
+    
+    setUsername(user.username || "");
+    setBio(user.bio || "");
+    setSelectedImage(null);
+  }, [isEditProfileModalOpen, user]);
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -46,15 +59,19 @@ const EditProfileModal = () => {
         <div className="flex flex-col items-center px-6 py-6">
           {/* Avatar Preview */}
           <div className="relative mb-4">
-            <img
-              src={
-                selectedImage
-                  ? URL.createObjectURL(selectedImage)
-                  : user.profilePic
-              }
-              alt="Profile"
-              className="w-24 h-24 rounded-full object-cover border-4 border-zinc-800"
-            />
+            {selectedImage || user.profilePic ? (
+              <img
+                src={
+                  selectedImage
+                    ? URL.createObjectURL(selectedImage)
+                    : user.profilePic
+                }
+                alt="Profile"
+                className="w-24 h-24 rounded-full object-cover border-4 border-zinc-200 dark:border-zinc-800"
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-zinc-200 dark:bg-zinc-800 border-4 border-zinc-100 dark:border-zinc-900" />
+            )}
             {/* Hidden File Input */}
             <input
               ref={fileInputRef}
@@ -74,7 +91,10 @@ const EditProfileModal = () => {
           {/* Username */}
           <div className="w-full mb-3">
             <div className="mb-1 flex items-center justify-between">
-              <label className="block text-sm text-zinc-500 dark:text-zinc-400" htmlFor="edit-username">
+              <label
+                className="block text-sm text-zinc-500 dark:text-zinc-400"
+                htmlFor="edit-username"
+              >
                 Username
               </label>
               <span className="text-xs text-zinc-400 dark:text-zinc-500">
@@ -87,14 +107,17 @@ const EditProfileModal = () => {
               maxLength={30}
               className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               disabled={saving}
             />
           </div>
           {/* Bio */}
           <div className="w-full mb-2">
             <div className="mb-1 flex items-center justify-between">
-              <label className="block text-sm text-zinc-500 dark:text-zinc-400" htmlFor="edit-bio">
+              <label
+                className="block text-sm text-zinc-500 dark:text-zinc-400"
+                htmlFor="edit-bio"
+              >
                 Bio
               </label>
               <span className="text-xs text-zinc-400 dark:text-zinc-500">
@@ -107,7 +130,7 @@ const EditProfileModal = () => {
               className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-950 dark:text-zinc-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition resize-none"
               rows={3}
               value={bio}
-              onChange={e => setBio(e.target.value)}
+              onChange={(e) => setBio(e.target.value)}
               disabled={saving}
             />
           </div>

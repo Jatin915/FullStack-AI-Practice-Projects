@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import BottomNav from "./BottomNav";
 import { usePosts } from "../../context/PostsContext";
@@ -9,8 +9,18 @@ import EditProfileModal from "../profile/EditProfileModal";
 
 const Layout = () => {
 
-  const {user} = useAuth();
+  const {user, loading} = useAuth();
   const {isCommentModalOpen, isCreatePostModalOpen, isEditProfileModalOpen} = usePosts();
+
+  if(loading) {
+    return <div className="h-screen text-2xl flex items-center justify-center">
+        Loading...
+      </div>
+  }
+
+  if(!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">

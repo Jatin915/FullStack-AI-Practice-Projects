@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
   const { userId } = useParams();
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const {
     profile,
@@ -15,7 +15,7 @@ const Profile = () => {
     handleLike,
     handleOpenComments,
     handleDeletePost,
-    handleOpenEditProfile
+    handleOpenEditProfile,
   } = usePosts();
 
   useEffect(() => {
@@ -24,8 +24,27 @@ const Profile = () => {
 
   if (profileLoading) {
     return (
-      <div className="h-screen text-2xl flex items-center justify-center">
-        Loading...
+      <div className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4">
+        <div className="flex flex-col items-center gap-3 text-zinc-500 dark:text-zinc-400">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600 dark:border-zinc-700 dark:border-t-blue-500" />
+          <p className="text-sm font-medium">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile?.user) {
+    return (
+      <div className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4 text-center">
+        <div>
+          <div className="text-5xl">👤</div>
+          <h2 className="mt-4 text-xl font-bold text-zinc-950 dark:text-zinc-100">
+            Profile not found
+          </h2>
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            This profile may not exist or could not be loaded.
+          </p>
+        </div>
       </div>
     );
   }
@@ -33,64 +52,73 @@ const Profile = () => {
   const myPosts = profile?.posts || [];
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="flex justify-between items-center bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
-        <div className="flex gap-5">
-          {profile.user.profilePic ? (
-            <img
-              src={profile.user.profilePic}
-              alt={`${profile.user.username} profile`}
-              className="w-24 h-24 rounded-full object-cover mb-4"
-            />
-          ) : (
-            <div className="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600 mb-4" />
-          )}
+    <div className="w-full max-w-3xl mx-auto px-3 py-4 sm:px-5 sm:py-6">
+      <div className="mb-7 overflow-hidden rounded-[1.6rem] border border-zinc-200/80 bg-white shadow-sm dark:border-zinc-800/80 dark:bg-zinc-950 dark:shadow-none sm:mb-9">
+        <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+          <div className="flex min-w-0 items-center gap-4 sm:gap-5">
+            {profile.user.profilePic ? (
+              <img
+                src={profile.user.profilePic}
+                alt={`${profile.user.username} profile`}
+                className="h-20 w-20 shrink-0 rounded-full object-cover ring-4 ring-zinc-100 dark:ring-zinc-900 sm:h-28 sm:w-28"
+              />
+            ) : (
+              <div className="h-20 w-20 shrink-0 rounded-full bg-zinc-200 ring-4 ring-zinc-100 dark:bg-zinc-800 dark:ring-zinc-900 sm:h-28 sm:w-28" />
+            )}
 
-          <div className="flex flex-col justify-center items-start">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              {profile.user.username}
-            </h1>
-            <p className="text-gray-500 dark:text-gray-300 text-center">
-              {profile.user.bio && profile.user.bio.trim() !== ""
-                ? profile.user.bio
-                : "No bio yet"}
-            </p>
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate text-xl font-bold tracking-tight text-zinc-950 dark:text-zinc-100 sm:text-2xl">
+                {profile.user.username}
+              </h1>
+              <p className="mt-1.5 max-w-md break-words text-sm leading-6 text-zinc-500 dark:text-zinc-400 sm:text-[0.95rem]">
+                {profile.user.bio && profile.user.bio.trim() !== ""
+                  ? profile.user.bio
+                  : "No bio yet"}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="flex flex-col items-end gap-4">
-          {(user._id === profile?.user._id) && <button
-            onClick={handleOpenEditProfile}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition"
-          >
-            Edit Profile
-          </button>}
+          <div className="flex shrink-0 items-center justify-between gap-3 border-t border-zinc-200/80 pt-4 dark:border-zinc-800/80 sm:flex-col sm:items-end sm:border-0 sm:pt-0">
+            <div className="flex items-baseline gap-1.5 sm:order-2 sm:mr-1">
+              <span className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-100">
+                {myPosts.length}
+              </span>
+              <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                {myPosts.length === 1 ? "Post" : "Posts"}
+              </span>
+            </div>
 
-          <div className="flex flex-col items-center">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Total Posts
-            </h2>
-            <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
-              {myPosts.length}
-            </p>
+            {user?._id === profile.user._id && (
+              <button
+                onClick={handleOpenEditProfile}
+                className="cursor-pointer rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-2.5 text-sm font-semibold text-zinc-800 transition-all hover:bg-zinc-100 active:scale-95 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 sm:order-1"
+              >
+                Edit Profile
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      <section>
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-          My Posts
-        </h3>
+      <section className="pb-24 sm:pb-28">
+        <div className="mb-4 flex items-center justify-between px-1 sm:mb-5">
+          <h3 className="text-lg font-bold tracking-tight text-zinc-950 dark:text-zinc-100 sm:text-xl">
+            Posts
+          </h3>
+          <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500">
+            {myPosts.length} total
+          </span>
+        </div>
         {myPosts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400 space-y-4 py-20">
-            <span className="text-7xl">📷</span>
-            <h4 className="text-2xl font-semibold">No Posts Yet</h4>
-            <p className="max-w-xs">
+          <div className="flex min-h-72 flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-zinc-300 bg-zinc-50/60 px-6 py-14 text-center dark:border-zinc-800 dark:bg-zinc-900/30">
+            <span className="text-5xl opacity-80 sm:text-6xl">📷</span>
+            <h4 className="mt-4 text-lg font-bold text-zinc-800 dark:text-zinc-200 sm:text-xl">No Posts Yet</h4>
+            <p className="mt-2 max-w-xs text-sm leading-6 text-zinc-500 dark:text-zinc-400">
               You haven't created any posts yet. Start sharing your moments now!
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-5">
             {myPosts.map((post) => (
               <PostCard
                 key={post._id}

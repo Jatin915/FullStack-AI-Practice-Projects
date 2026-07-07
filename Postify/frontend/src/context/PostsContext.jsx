@@ -29,6 +29,7 @@ export const PostsProvider = ({ children }) => {
 
   const getProfile = async (userId) => {
     try {
+      setProfileLoading(true);
       const data = await fetchProfile(userId);
       setProfile(data);
     } catch (error) {
@@ -40,11 +41,11 @@ export const PostsProvider = ({ children }) => {
 
   const handleOpenEditProfile = () => {
     setIsEditProfileModalOpen(true);
-  }
+  };
 
   const handleCloseEditProfile = () => {
     setIsEditProfileModalOpen(false);
-  }
+  };
 
   const handleUpdateProfile = async ({
     username,
@@ -121,7 +122,7 @@ export const PostsProvider = ({ children }) => {
           post._id === data.updatedPost._id ? data.updatedPost : post,
         ),
       );
-      if(profile) {
+      if (profile) {
         setProfile((prev) => ({
           ...prev,
           posts: prev.posts.map((post) =>
@@ -159,7 +160,7 @@ export const PostsProvider = ({ children }) => {
           post._id === data.updatedPost._id ? data.updatedPost : post,
         ),
       );
-      if(profile) {
+      if (profile) {
         setProfile((prev) => ({
           ...prev,
           posts: prev.posts.map((post) =>
@@ -181,7 +182,7 @@ export const PostsProvider = ({ children }) => {
           post._id === data.updatedPost._id ? data.updatedPost : post,
         ),
       );
-      if(profile) {
+      if (profile) {
         setProfile((prev) => ({
           ...prev,
           posts: prev.posts.map((post) =>
@@ -201,7 +202,7 @@ export const PostsProvider = ({ children }) => {
       setPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== data.deletedPost._id),
       );
-      if(profile) {
+      if (profile) {
         setProfile((prev) => ({
           ...prev,
           posts: prev.posts.filter((post) => post._id !== data.deletedPost._id),
@@ -258,7 +259,7 @@ export const PostsProvider = ({ children }) => {
     setIsCommentModalOpen(false);
     setIsCreatePostModalOpen(false);
     setIsEditProfileModalOpen(false);
-};
+  };
 
   useEffect(() => {
     if (!loading && user) {
@@ -295,7 +296,7 @@ export const PostsProvider = ({ children }) => {
         handleOpenEditProfile,
         handleCloseEditProfile,
         // logout
-        resetPostsContext
+        resetPostsContext,
       }}
     >
       {children}

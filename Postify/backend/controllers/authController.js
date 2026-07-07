@@ -49,7 +49,9 @@ const signup = async (req,res) => {
             user: {
                 id: newUser._id,
                 username: newUser.username,
-                email: newUser.email
+                email: newUser.email,
+                bio: newUser.bio,
+                profilePic: newUser.profilePic
             }
         });
 
@@ -108,7 +110,9 @@ const login = async (req, res) => {
             user: {
                 _id: user._id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                bio: user.bio,
+                profilePic: user.profilePic
             }
         });
 
