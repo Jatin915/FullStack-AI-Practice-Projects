@@ -104,7 +104,7 @@ const BottomNav = () => {
           </button>
 
           <Link
-            to={`/profile/${user?._id}`}
+            to={user?._id ? `/profile/${user?._id}` : "/"}
             onClick={() => {
               setActiveTab("profile");
               handleCloseCreatePost();

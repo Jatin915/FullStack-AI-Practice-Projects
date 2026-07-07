@@ -7,16 +7,13 @@ import { useAuth } from "./context/AuthContext";
 import ProtectedRoute from './routes/ProtectedRoute'
 import PublicRoute from "./routes/PublicRoute";
 import Layout from './components/layout/Layout';
+import PageLoader from "./components/ui/PageLoader";
 
 const App = () => {
   const { loading } = useAuth();
 
-  if(loading) {
-    return (
-      <div className="h-screen flex items-center justify-center text-3xl">
-        <h1>Loading...</h1>
-      </div>
-    );
+  if (loading) {
+    return <PageLoader text="Loading Postify" />;
   }
 
     return (
