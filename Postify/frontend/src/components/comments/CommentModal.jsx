@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { usePosts } from "../../context/PostsContext";
 import { useAuth } from "../../context/AuthContext";
+import { motion, useReducedMotion } from "framer-motion";
 
 const CommentModal = () => {
+  const shouldReduceMotion = useReducedMotion();
 
   const {
     selectedPost,
@@ -25,8 +27,26 @@ const CommentModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 backdrop-blur-sm pb-[calc(5.75rem+env(safe-area-inset-bottom))] sm:items-center sm:px-6 sm:pt-4 sm:pb-26">
-      <div className="w-full h-[min(76dvh,calc(100%-1rem))] rounded-[1.75rem] border border-zinc-200/80 bg-white shadow-2xl flex flex-col overflow-hidden dark:border-zinc-800/80 dark:bg-zinc-950 sm:h-[78vh] sm:max-w-2xl sm:rounded-[1.75rem]">
+    <motion.div
+      initial={shouldReduceMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 backdrop-blur-sm pb-[calc(5.75rem+env(safe-area-inset-bottom))] sm:items-center sm:px-6 sm:pt-4 sm:pb-26"
+    >
+      <motion.div
+        initial={
+          shouldReduceMotion ? false : { opacity: 0, y: 32, scale: 0.98 }
+        }
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 32, scale: 0.98 }}
+        transition={
+          shouldReduceMotion
+            ? { duration: 0 }
+            : { type: "spring", stiffness: 360, damping: 32, mass: 0.85 }
+        }
+        className="w-full h-[min(76dvh,calc(100%-1rem))] rounded-[1.75rem] border border-zinc-200/80 bg-white shadow-2xl flex flex-col overflow-hidden dark:border-zinc-800/80 dark:bg-zinc-950 sm:h-[78vh] sm:max-w-2xl sm:rounded-[1.75rem]"
+      >
         <div className="flex shrink-0 items-center justify-between border-b border-zinc-200/80 px-4 py-3.5 dark:border-zinc-800/80 sm:px-6 sm:py-4">
           <div>
             <h2 className="text-lg font-bold tracking-tight text-zinc-950 dark:text-zinc-100 sm:text-xl">
@@ -40,7 +60,19 @@ const CommentModal = () => {
             onClick={handleCloseComments}
             className="w-10 h-10 rounded-full flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white active:scale-95 transition-all"
           >
-            ✕
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
           </button>
         </div>
 
@@ -67,13 +99,31 @@ const CommentModal = () => {
         <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 sm:px-6 sm:py-5 sm:space-y-5">
           {selectedPost?.comments.length === 0 ? (
             <div className="h-full min-h-52 flex flex-col items-center justify-center text-center text-zinc-500 dark:text-zinc-400 gap-2">
-              <div className="text-4xl opacity-80 sm:text-5xl">💬</div>
-              <h3 className="text-base font-semibold text-zinc-700 dark:text-zinc-300 sm:text-lg">No comments yet</h3>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-12 w-12 opacity-70 sm:h-14 sm:w-14"
+                aria-hidden="true"
+              >
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z" />
+                <path d="M8 10h8" />
+                <path d="M8 14h5" />
+              </svg>
+              <h3 className="text-base font-semibold text-zinc-700 dark:text-zinc-300 sm:text-lg">
+                No comments yet
+              </h3>
               <p>Be the first one to comment.</p>
             </div>
           ) : (
             selectedPost.comments.map((commentItem) => (
-              <div key={commentItem._id} className="flex items-start gap-2.5 sm:gap-3">
+              <div
+                key={commentItem._id}
+                className="flex items-start gap-2.5 sm:gap-3"
+              >
                 {commentItem.userId?.profilePic ? (
                   <img
                     src={commentItem.userId.profilePic}
@@ -83,7 +133,7 @@ const CommentModal = () => {
                 ) : (
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 ring-1 ring-zinc-200 dark:ring-zinc-700 bg-zinc-300 dark:bg-zinc-700" />
                 )}
-                <div className="min-w-0 flex-1 flex items-start justify-between gap-2 rounded-[1.15rem] bg-zinc-100/90 px-3.5 py-2.5 dark:bg-zinc-900 sm:max-w-[85%] sm:px-4 sm:py-3">
+                <div className="relative min-w-0 flex-1 flex items-start justify-between gap-2 rounded-[1.15rem] rounded-tl-sm bg-zinc-100/90 px-3.5 py-2.5 dark:bg-zinc-900 sm:max-w-[85%] sm:px-4 sm:py-3 before:absolute before:-left-2 before:top-0 before:h-4 before:w-4 before:bg-zinc-100/90 before:[clip-path:polygon(100%_0,100%_100%,0_0)] dark:before:bg-zinc-900">
                   <div className="min-w-0">
                     <h4 className="truncate text-sm font-semibold text-zinc-950 dark:text-zinc-100">
                       {commentItem.userId?.username}
@@ -106,7 +156,16 @@ const CommentModal = () => {
                         className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white transition-colors"
                         title="More"
                       >
-                        ⋮
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                          aria-hidden="true"
+                        >
+                          <circle cx="12" cy="5" r="1.7" />
+                          <circle cx="12" cy="12" r="1.7" />
+                          <circle cx="12" cy="19" r="1.7" />
+                        </svg>
                       </button>
 
                       {activeMenu === commentItem._id && (
@@ -116,9 +175,25 @@ const CommentModal = () => {
                               setConfirmDeleteId(commentItem._id);
                               setActiveMenu(null);
                             }}
-                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2"
                           >
-                            Delete
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.9"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="h-4 w-4 shrink-0"
+                              aria-hidden="true"
+                            >
+                              <path d="M3 6h18" />
+                              <path d="M8 6V4h8v2" />
+                              <path d="m19 6-1 15H6L5 6" />
+                              <path d="M10 11v5" />
+                              <path d="M14 11v5" />
+                            </svg>
+                            <span>Delete</span>
                           </button>
                         </div>
                       )}
@@ -143,7 +218,10 @@ const CommentModal = () => {
                           </button>
                           <button
                             onClick={() => {
-                              handleDeleteComment(selectedPost._id, confirmDeleteId);
+                              handleDeleteComment(
+                                selectedPost._id,
+                                confirmDeleteId,
+                              );
                               setConfirmDeleteId(null);
                             }}
                             className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-sm font-semibold text-white transition-all"
@@ -179,8 +257,8 @@ const CommentModal = () => {
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

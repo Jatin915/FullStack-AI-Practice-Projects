@@ -6,7 +6,12 @@ import { useAuth } from "../../context/AuthContext";
 
 const BottomNav = () => {
   const { user } = useAuth();
-  const { handleOpenCreatePost, handleCloseCreatePost, handleCloseComments, handleCloseEditProfile } = usePosts();
+  const {
+    handleOpenCreatePost,
+    handleCloseCreatePost,
+    handleCloseComments,
+    handleCloseEditProfile,
+  } = usePosts();
   const location = useLocation();
   const shouldReduceMotion = useReducedMotion();
 
@@ -56,12 +61,20 @@ const BottomNav = () => {
             className={`${navItemClass} ${activeTab === "home" ? activeTextClass : ""}`}
           >
             {activeTab === "home" && <ActivePill />}
-            <span
-              className="text-[1.45rem] leading-none sm:text-[1.55rem]"
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-6 w-6 sm:h-7 sm:w-7"
               aria-hidden="true"
             >
-              🏠
-            </span>
+              <path d="M3 10.75 12 3l9 7.75" />
+              <path d="M5.5 9.5V21h13V9.5" />
+              <path d="M9.5 21v-6h5v6" />
+            </svg>
           </Link>
 
           <button
@@ -74,12 +87,20 @@ const BottomNav = () => {
             aria-label="Create post"
             className={navItemClass}
           >
-            <span
-              className="flex h-8 cursor-pointer w-8 items-center justify-center rounded-[0.6rem] border-2 border-current text-[1.4rem] font-light leading-none sm:h-9 sm:w-9"
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-7 w-7 sm:h-8 sm:w-8"
               aria-hidden="true"
             >
-              +
-            </span>
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <path d="M12 8v8" />
+              <path d="M8 12h8" />
+            </svg>
           </button>
 
           <Link
@@ -94,12 +115,19 @@ const BottomNav = () => {
             className={`${navItemClass} ${activeTab === "profile" ? activeTextClass : ""}`}
           >
             {activeTab === "profile" && <ActivePill />}
-            <span
-              className="text-[1.45rem] leading-none sm:text-[1.55rem]"
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-6 w-6 sm:h-7 sm:w-7"
               aria-hidden="true"
             >
-              👤
-            </span>
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4.5 21a7.5 7.5 0 0 1 15 0" />
+            </svg>
           </Link>
         </div>
       </div>

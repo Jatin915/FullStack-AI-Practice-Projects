@@ -1,4 +1,5 @@
 import { Outlet, Navigate } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import Navbar from "./Navbar";
 import BottomNav from "./BottomNav";
 import { usePosts } from "../../context/PostsContext";
@@ -8,17 +9,18 @@ import CreatePostModal from "../feed/CreatePostModal";
 import EditProfileModal from "../profile/EditProfileModal";
 
 const Layout = () => {
+  const { user, loading } = useAuth();
+  const { isCommentModalOpen, isCreatePostModalOpen, isEditProfileModalOpen } = usePosts();
 
-  const {user, loading} = useAuth();
-  const {isCommentModalOpen, isCreatePostModalOpen, isEditProfileModalOpen} = usePosts();
-
-  if(loading) {
-    return <div className="h-screen text-2xl flex items-center justify-center">
+  if (loading) {
+    return (
+      <div className="h-screen text-2xl flex items-center justify-center">
         Loading...
       </div>
+    );
   }
 
-  if(!user) {
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
@@ -28,9 +30,11 @@ const Layout = () => {
 
       <main className="max-w-2xl mx-auto px-4 py-4 pb-20">
         <Outlet />
-        {isCommentModalOpen && <CommentModal />}
-        {isCreatePostModalOpen && <CreatePostModal />}
-        {isEditProfileModalOpen && <EditProfileModal />}
+        <AnimatePresence>
+          {isCommentModalOpen && <CommentModal />}
+          {isCreatePostModalOpen && <CreatePostModal />}
+          {isEditProfileModalOpen && <EditProfileModal />}
+        </AnimatePresence>
       </main>
 
       <BottomNav />

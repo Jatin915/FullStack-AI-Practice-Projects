@@ -148,7 +148,6 @@ export const PostsProvider = ({ children }) => {
 
   const handleCloseComments = () => {
     setIsCommentModalOpen(false);
-    setSelectedPostId(null);
   };
 
   const handleComment = async (postId, comment) => {

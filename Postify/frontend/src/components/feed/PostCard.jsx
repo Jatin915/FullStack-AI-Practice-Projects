@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { motion, useReducedMotion } from "framer-motion";
 
 const PostCard = ({ post, onLike, onComment, onDelete }) => {
   const { user } = useAuth();
+  const shouldReduceMotion = useReducedMotion();
 
   const [activeMenu, setActiveMenu] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
@@ -14,10 +16,22 @@ const PostCard = ({ post, onLike, onComment, onDelete }) => {
   const navigate = useNavigate();
 
   return (
-    <article className="bg-white dark:bg-zinc-950 mb-5 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[1.4rem] overflow-hidden shadow-sm dark:shadow-none transition-colors">
+    <motion.article
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={
+        shouldReduceMotion
+          ? { duration: 0 }
+          : { duration: 0.35, ease: "easeOut" }
+      }
+      className="bg-white dark:bg-zinc-950 mb-5 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[1.4rem] overflow-hidden shadow-sm dark:shadow-none transition-colors"
+    >
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3.5 sm:px-5 sm:py-4">
-        <div onClick={() => navigate(`/profile/${post.userId._id}`)} className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden cursor-pointer ring-1 ring-zinc-200 dark:ring-zinc-700 transition-opacity hover:opacity-85">
+        <div
+          onClick={() => navigate(`/profile/${post.userId._id}`)}
+          className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden cursor-pointer ring-1 ring-zinc-200 dark:ring-zinc-700 transition-opacity hover:opacity-85"
+        >
           {post.userId?.profilePic ? (
             <img
               src={post.userId.profilePic}
@@ -29,7 +43,10 @@ const PostCard = ({ post, onLike, onComment, onDelete }) => {
 
         <div className="flex min-w-0 flex-1 items-center justify-between">
           <div className="min-w-0">
-            <h3 onClick={() => navigate(`/profile/${post.userId._id}`)} className="cursor-pointer truncate font-semibold text-[0.95rem] text-zinc-950 dark:text-zinc-100 hover:underline underline-offset-2">
+            <h3
+              onClick={() => navigate(`/profile/${post.userId._id}`)}
+              className="cursor-pointer truncate font-semibold text-[0.95rem] text-zinc-950 dark:text-zinc-100 hover:underline underline-offset-2"
+            >
               {post.userId?.username}
             </h3>
 
@@ -57,9 +74,25 @@ const PostCard = ({ post, onLike, onComment, onDelete }) => {
                       setConfirmDeleteId(post._id);
                       setActiveMenu(null);
                     }}
-                    className="w-full px-4 py-2.5 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                    className="w-full px-4 py-2.5 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2"
                   >
-                    Delete
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.9"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4 shrink-0"
+                      aria-hidden="true"
+                    >
+                      <path d="M3 6h18" />
+                      <path d="M8 6V4h8v2" />
+                      <path d="m19 6-1 15H6L5 6" />
+                      <path d="M10 11v5" />
+                      <path d="M14 11v5" />
+                    </svg>
+                    <span>Delete</span>
                   </button>
                 </div>
               )}
@@ -116,7 +149,18 @@ const PostCard = ({ post, onLike, onComment, onDelete }) => {
             onClick={() => onLike(post._id)}
             className="group flex min-h-10 items-center gap-2 rounded-full px-2.5 -ml-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all active:scale-95"
           >
-            <span className="text-[1.35rem] leading-none transition-transform duration-200 group-active:scale-125">{isLiked ? "❤️" : "🤍"}</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill={isLiked ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={`h-6 w-6 transition-transform duration-200 group-active:scale-125 ${isLiked ? "text-red-500" : ""}`}
+              aria-hidden="true"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z" />
+            </svg>
             <span>{likesCount}</span>
           </button>
 
@@ -126,13 +170,26 @@ const PostCard = ({ post, onLike, onComment, onDelete }) => {
             }}
             className="group flex min-h-10 items-center gap-2 rounded-full px-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-500 transition-all active:scale-95"
           >
-            <span className="text-[1.35rem] leading-none transition-transform duration-200 group-hover:scale-105">💬</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-6 w-6 transition-transform duration-200 group-hover:scale-105"
+              aria-hidden="true"
+            >
+              <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z" />
+            </svg>
             <span>{post.comments.length}</span>
           </button>
         </div>
-        <p className="text-[0.95rem] leading-6 text-zinc-800 dark:text-zinc-200 break-words">{post.caption}</p>
+        <p className="text-[0.95rem] leading-6 text-zinc-800 dark:text-zinc-200 break-words">
+          {post.caption}
+        </p>
       </div>
-    </article>
+    </motion.article>
   );
 };
 

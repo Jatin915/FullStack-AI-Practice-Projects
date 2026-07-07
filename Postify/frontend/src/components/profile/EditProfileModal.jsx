@@ -1,16 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { usePosts } from "../../context/PostsContext";
+import { motion, useReducedMotion } from "framer-motion";
 
 const EditProfileModal = () => {
+  const shouldReduceMotion = useReducedMotion();
   const { user } = useAuth();
-  const {
-    handleUpdateProfile,
-    handleCloseEditProfile,
-    isEditProfileModalOpen,
-  } = usePosts();
+  const {handleUpdateProfile,handleCloseEditProfile,isEditProfileModalOpen,} = usePosts();
+  
   const [username, setUsername] = useState(user?.username || "");
-  const [bio, setBio] = useState(user.bio || "");
+  const [bio, setBio] = useState(user?.bio || "");
   const [selectedImage, setSelectedImage] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -42,8 +41,22 @@ const EditProfileModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-3 backdrop-blur-sm sm:p-4">
-      <div className="w-full max-h-[90dvh] max-w-md overflow-y-auto rounded-[1.75rem] border border-zinc-200/80 bg-white shadow-2xl dark:border-zinc-800/80 dark:bg-zinc-950">
+    <motion.div       
+      initial={shouldReduceMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-3 backdrop-blur-sm sm:p-4">
+      <motion.div 
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 18, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 18, scale: 0.97 }}
+        transition={
+          shouldReduceMotion
+            ? { duration: 0 }
+            : { type: "spring", stiffness: 380, damping: 32, mass: 0.8 }
+        }
+        className="w-full max-h-[90dvh] max-w-md overflow-y-auto rounded-[1.75rem] border border-zinc-200/80 bg-white shadow-2xl dark:border-zinc-800/80 dark:bg-zinc-950">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-200/80 px-4 py-3.5 dark:border-zinc-800/80 sm:px-6 sm:py-4">
           <h2 className="text-lg font-semibold">Edit Profile</h2>
@@ -154,8 +167,8 @@ const EditProfileModal = () => {
             {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
